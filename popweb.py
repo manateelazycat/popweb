@@ -161,6 +161,8 @@ class WebWindow(QWidget):
         if self.js_code != "":
             self.webview.page().runJavaScript(self.js_code)
 
+        self.webview.setZoomFactor(self.zoom_factor)
+
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.WindowDeactivate:
             self.hide()
