@@ -103,7 +103,7 @@
 
 (defun popweb-dict-bing (&optional word)
   (interactive)
-  (popweb-call 'popweb-dict-bing-translate (list (or word (popweb-prompt-input)))))
+  (popweb-call 'popweb-dict-bing-translate (list (or word (popweb-prompt-input "Bing dict: ")))))
 
 (defun popweb-dict-bing-hide-after-move ()
   (when popweb-dict-bing-visible-p

@@ -312,9 +312,9 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
     (setq popweb--first-translate-info args)
     (popweb-start-process)))
 
-(defun popweb-prompt-input ()
+(defun popweb-prompt-input (prompt)
   "Prompt input object for translate."
-  (read-string (format "Word (%s): " (or (popweb-region-or-word) ""))
+  (read-string (format "%s(%s): " prompt (or (popweb-region-or-word) ""))
                nil nil
                (popweb-region-or-word)))
 
