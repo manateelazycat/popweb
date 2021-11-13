@@ -327,6 +327,21 @@ Otherwise return word around point."
                                       (region-end))
     (thing-at-point 'word t)))
 
+(defun popweb-say-word (word)
+  (if (featurep 'cocoa)
+      (call-process-shell-command
+       (format "say %s" word) nil 0)
+    (let ((player (or (executable-find "mpv")
+                      (executable-find "mplayer")
+                      (executable-find "mpg123"))))
+      (if player
+          (start-process
+           player
+           nil
+           player
+           (format "http://dict.youdao.com/dictvoice?type=2&audio=%s" (url-hexify-string word)))
+        (message "mpv, mplayer or mpg123 is needed to play word voice")))))
+
 (provide 'popweb)
 
 ;;; popweb.el ends here

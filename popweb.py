@@ -172,7 +172,7 @@ class WebWindow(QWidget):
 
 class POPWEB(object):
     def __init__(self, args):
-        global emacs_width, emacs_height, proxy_string
+        global proxy_string
 
         # Init EPC client port.
         init_epc_client(int(args[0]))
@@ -212,9 +212,6 @@ class POPWEB(object):
         self.proxy = (proxy_type, proxy_host, proxy_port)
         self.is_proxy = False
 
-        if proxy_type != "" and proxy_host != "" and proxy_port != "":
-            self.enable_proxy()
-
     def enable_proxy(self):
         global proxy_string
 
@@ -249,8 +246,13 @@ class POPWEB(object):
             self.enable_proxy()
 
     @PostGui()
-    def pop_web_window(self, x, y, offset, width_scale, height_scale, url, js_code):
+    def pop_web_window(self, x, y, offset, width_scale, height_scale, url, js_code, use_proxy):
         global screen_size
+
+        if use_proxy == "true":
+            self.enable_proxy()
+        else:
+            self.disable_proxy()
 
         self.web_window.js_code = js_code
         self.web_window.webview.load(QUrl(url))
