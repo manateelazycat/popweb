@@ -29,7 +29,7 @@ If you need to use a proxy to access the internet, one can configure the proxy s
 If you use Socks5 as a local proxy, one can set proxy type with:
 
 ```Elisp
-(setq eaf-proxy-type "socks5")
+(setq popweb-proxy-type "socks5")
 ```
 
 # Screenshot
