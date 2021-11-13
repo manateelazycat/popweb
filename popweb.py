@@ -269,7 +269,7 @@ class POPWEB(object):
     @PostGui()
     def hide_web_window(self):
         self.web_window.hide()
-        self.web_window.webview.load("")
+        self.web_window.webview.load(QUrl(""))
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''
