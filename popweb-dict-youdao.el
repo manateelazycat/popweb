@@ -100,9 +100,13 @@
     (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
     (popweb-web-window-can-hide)))
 
-(defun popweb-dict-youdao (&optional word)
+(defun popweb-dict-youdao-input (&optional word)
   (interactive)
   (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-prompt-input "Youdao dict: ")))))
+
+(defun popweb-dict-youdao-pointer ()
+  (interactive)
+  (popweb-start 'popweb-dict-youdao-translate (list (popweb-region-or-word))))
 
 (provide 'popweb-dict-youdao)
 

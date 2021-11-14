@@ -100,9 +100,14 @@
     (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
     (popweb-web-window-can-hide)))
 
-(defun popweb-dict-bing (&optional word)
+(defun popweb-dict-bing-input (&optional word)
   (interactive)
   (popweb-start 'popweb-dict-bing-translate (list (or word (popweb-prompt-input "Bing dict: ")))))
+
+(defun popweb-dict-bing-pointer ()
+  (interactive)
+  (popweb-start 'popweb-dict-bing-translate (list (popweb-region-or-word))))
+
 
 (provide 'popweb-dict-bing)
 

@@ -14,8 +14,10 @@ Browser related technology comes from my other project [Emacs Application Framew
 ```
 
 ## Usage
-* popweb-dict-bing: popup tranlsate window with Bing
-* popweb-dict-youdao: popup tranlsate window with Youdao
+* popweb-dict-bing-input: popup input translation window with Bing
+* popweb-dict-youdao-input: popup input translation window with Youdao
+* popweb-dict-bing-pointer: popup pointer translation window with Bing
+* popweb-dict-youdao-pointer: popup pointer translation window with Youdao
 
 ## Proxy
 If you need to use a proxy to access the internet, one can configure the proxy settings.
