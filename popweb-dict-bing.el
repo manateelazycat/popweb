@@ -94,7 +94,7 @@
          (width 0.3)
          (height 0.5)
          (word (nth 0 info))
-         (url (format "https://www.bing.com/dict/search?q=%s" word))
+         (url (format "http://www.bing.com/dict/search?mkt=zh-cn&q=%s" word))
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';")
          (use-proxy "false"))
     (popweb-say-word word)

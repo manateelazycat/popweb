@@ -136,7 +136,8 @@ class WebWindow(QWidget):
         self.js_code = ""
 
         self.webview = QWebEngineView()
-        self.webview.loadFinished.connect(self.execute_js_code)
+        self.webview.loadStarted.connect(lambda : self.webview.setZoomFactor(self.zoom_factor))
+        self.webview.loadProgress.connect(lambda progress: self.execute_js_code())
         self.webview.setZoomFactor(self.zoom_factor)
 
         self.vbox.addWidget(self.webview)
@@ -160,8 +161,6 @@ class WebWindow(QWidget):
     def execute_js_code(self):
         if self.js_code != "":
             self.webview.page().runJavaScript(self.js_code)
-
-        self.webview.setZoomFactor(self.zoom_factor)
 
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.WindowDeactivate:
