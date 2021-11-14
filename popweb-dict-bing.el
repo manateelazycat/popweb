@@ -84,8 +84,6 @@
 
 ;;; Code:
 
-(defvar popweb-dict-bing-visible-p nil)
-
 (defun popweb-dict-bing-translate (info)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
@@ -100,18 +98,12 @@
          (use-proxy "false"))
     (popweb-say-word word)
     (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
-    (run-with-timer 1 nil '(lambda () (setq popweb-dict-bing-visible-p t)))))
-
-(defun popweb-dict-bing (&optional word)
-  (interactive)
-  (popweb-call 'popweb-dict-bing-translate (list (or word (popweb-prompt-input "Bing dict: ")))))
+    (popweb-web-window-can-hide)))
 
 (defun popweb-dict-bing-hide-after-move ()
   (when popweb-dict-bing-visible-p
     (popweb-call-async "hide_web_window")
     (setq popweb-dict-bing-visible-p nil)))
-
-(add-hook 'post-command-hook 'popweb-dict-bing-hide-after-move)
 
 (provide 'popweb-dict-bing)
 

@@ -84,8 +84,6 @@
 
 ;;; Code:
 
-(defvar popweb-dict-youdao-visible-p nil)
-
 (defun popweb-dict-youdao-translate (info)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
@@ -100,18 +98,11 @@
          (use-proxy "false"))
     (popweb-say-word word)
     (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
-    (run-with-timer 1 nil '(lambda () (setq popweb-dict-youdao-visible-p t)))))
+    (popweb-web-window-can-hide)))
 
 (defun popweb-dict-youdao (&optional word)
   (interactive)
   (popweb-call 'popweb-dict-youdao-translate (list (or word (popweb-prompt-input "Youdao dict: ")))))
-
-(defun popweb-dict-youdao-hide-after-move ()
-  (when popweb-dict-youdao-visible-p
-    (popweb-call-async "hide_web_window")
-    (setq popweb-dict-youdao-visible-p nil)))
-
-(add-hook 'post-command-hook 'popweb-dict-youdao-hide-after-move)
 
 (provide 'popweb-dict-youdao)
 

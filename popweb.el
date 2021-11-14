@@ -348,6 +348,18 @@ Otherwise return word around point."
            (format "http://dict.youdao.com/dictvoice?type=2&audio=%s" (url-hexify-string word)))
         (message "mpv, mplayer or mpg123 is needed to play word voice")))))
 
+(defvar popweb-web-window-visible-p nil)
+
+(defun popweb-web-window-hide-after-move ()
+  (when popweb-web-window-visible-p
+    (popweb-call-async "hide_web_window")
+    (setq popweb-web-window-visible-p nil)))
+
+(defun popweb-web-window-can-hide ()
+  (run-with-timer 1 nil '(lambda () (setq popweb-web-window-visible-p t))))
+
+(add-hook 'post-command-hook 'popweb-web-window-hide-after-move)
+
 (provide 'popweb)
 
 ;;; popweb.el ends here
