@@ -119,6 +119,22 @@ def get_emacs_vars(args):
 
     return list(map(lambda result: result if result != [] else False, epc_client.call_sync("get-emacs-vars", args)))
 
+def get_emacs_func_result(method_name, args):
+    global epc_client
+
+    if epc_client == None:
+        print("Please call init_epc_client first before callling eval_in_emacs.")
+    else:
+        args = list(map(convert_arg_to_str, args))
+        # Make argument encode with Base64, avoid string quote problem pass to elisp side.
+        args = list(map(string_to_base64, args))
+
+        args.insert(0, method_name)
+
+        # Call eval-in-emacs elisp function synchronously and return the result
+        result = epc_client.call_sync("eval-in-emacs", args)
+        return result if result != [] else False
+
 class WebWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -128,12 +144,15 @@ class WebWindow(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
         self.vbox = QVBoxLayout(self)
+        self.vbox.setContentsMargins(0, 0, 0, 0)
 
         self.zoom_factor = 1
         if screen_size.width() > 3000:
             self.zoom_factor = 2
 
         self.js_code = ""
+
+        self.dark_mode_js = open(os.path.join(os.path.dirname(__file__), "darkreader.js")).read()
 
         self.webview = QWebEngineView()
         self.webview.loadStarted.connect(lambda : self.webview.setZoomFactor(self.zoom_factor))
@@ -162,12 +181,27 @@ class WebWindow(QWidget):
         if self.js_code != "":
             self.webview.page().runJavaScript(self.js_code)
 
+        if get_emacs_func_result("popweb-get-theme-mode", []) == "dark":
+            self.load_dark_mode_js()
+            self.enable_dark_mode()
+
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.WindowDeactivate:
             self.hide()
             return True
 
         return super(WebWindow, self).eventFilter(source, event)
+
+    def load_dark_mode_js(self):
+        self.webview.page().runJavaScript('''if (typeof DarkReader === 'undefined') {{ {} }} '''.format(self.dark_mode_js))
+
+    def enable_dark_mode(self):
+        ''' Dark mode support.'''
+        self.webview.page().runJavaScript("""DarkReader.setFetchMethod(window.fetch); DarkReader.enable({brightness: 100, contrast: 90, sepia: 10});""")
+
+    def disable_dark_mode(self):
+        ''' Remove dark mode support.'''
+        self.webview.page().runJavaScript("""DarkReader.disable();""")
 
 class POPWEB(object):
     def __init__(self, args):

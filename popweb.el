@@ -364,6 +364,9 @@ Otherwise return word around point."
 
 (add-hook 'post-command-hook #'popweb-web-window-hide-after-move)
 
+(defun popweb-get-theme-mode ()
+  (format "%s" (frame-parameter nil 'background-mode)))
+
 (provide 'popweb)
 
 ;;; popweb.el ends here
