@@ -303,6 +303,12 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
       (mouse-absolute-pixel-position)
     (window-absolute-pixel-position)))
 
+(defun popweb-get-cursor-x-offset ()
+  (aref (aref (font-get-glyphs (font-at (point)) 65 66) 0) 4))
+
+(defun popweb-get-cursor-y-offset ()
+  (line-pixel-height))
+
 (defun popweb-call (first-start-callback args)
   (setq popweb--first-start-callback first-start-callback)
 

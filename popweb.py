@@ -245,7 +245,7 @@ class POPWEB(object):
             self.enable_proxy()
 
     @PostGui()
-    def pop_web_window(self, x, y, offset, width_scale, height_scale, url, js_code, use_proxy):
+    def pop_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, js_code, use_proxy):
         global screen_size
 
         if use_proxy == "true":
@@ -258,12 +258,12 @@ class POPWEB(object):
 
         window_width = screen_size.width() * width_scale
         window_height = screen_size.height() * height_scale
-        window_x = x + offset
+        window_x = x + x_offset
         if window_x + window_width > screen_size.width():
-            window_x = x - window_width - offset
-        window_y = y + offset
+            window_x = x - window_width - x_offset
+        window_y = y + y_offset
         if window_y + window_height > screen_size.height():
-            window_y = y - window_height - offset
+            window_y = y - window_height
 
         self.web_window.resize(window_width, window_height)
         self.web_window.move(window_x, window_y)

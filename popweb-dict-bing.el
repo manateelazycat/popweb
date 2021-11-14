@@ -90,7 +90,8 @@
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
          (y (cdr position))
-         (offset 30)
+         (x-offset (popweb-get-cursor-x-offset))
+         (y-offset (popweb-get-cursor-y-offset))
          (width 0.3)
          (height 0.5)
          (word (nth 0 info))
@@ -98,7 +99,7 @@
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';")
          (use-proxy "false"))
     (popweb-say-word word)
-    (popweb-call-async "pop_web_window" x y offset width height url js-code use-proxy)
+    (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
     (run-with-timer 1 nil '(lambda () (setq popweb-dict-bing-visible-p t)))))
 
 (defun popweb-dict-bing (&optional word)
