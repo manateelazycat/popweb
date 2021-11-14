@@ -313,7 +313,7 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
       30
     (line-pixel-height)))
 
-(defun popweb-call (first-start-callback args)
+(defun popweb-start (first-start-callback args)
   (setq popweb--first-start-callback first-start-callback)
 
   (if (popweb-epc-live-p popweb-epc-process)

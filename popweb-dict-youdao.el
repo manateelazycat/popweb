@@ -102,7 +102,7 @@
 
 (defun popweb-dict-youdao (&optional word)
   (interactive)
-  (popweb-call 'popweb-dict-youdao-translate (list (or word (popweb-prompt-input "Youdao dict: ")))))
+  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-prompt-input "Youdao dict: ")))))
 
 (provide 'popweb-dict-youdao)
 
