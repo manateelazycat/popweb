@@ -154,6 +154,8 @@ class WebWindow(QWidget):
 
         self.dark_mode_js = open(os.path.join(os.path.dirname(__file__), "darkreader.js")).read()
 
+        self.update_theme_mode()
+
         self.webview = QWebEngineView()
         self.webview.loadStarted.connect(lambda : self.webview.setZoomFactor(self.zoom_factor))
         self.webview.loadProgress.connect(lambda progress: self.execute_js_code())
@@ -177,11 +179,14 @@ class WebWindow(QWidget):
             import traceback
             traceback.print_exc()
 
+    def update_theme_mode(self):
+        self.theme_mode = get_emacs_func_result("popweb-get-theme-mode", [])
+
     def execute_js_code(self):
         if self.js_code != "":
             self.webview.page().runJavaScript(self.js_code)
 
-        if get_emacs_func_result("popweb-get-theme-mode", []) == "dark":
+        if self.theme_mode == "dark":
             self.load_dark_mode_js()
             self.enable_dark_mode()
 
@@ -299,6 +304,7 @@ class POPWEB(object):
         if window_y + window_height > screen_size.height():
             window_y = y - window_height
 
+        self.web_window.update_theme_mode()
         self.web_window.resize(window_width, window_height)
         self.web_window.move(window_x, window_y)
         self.web_window.show()
