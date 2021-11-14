@@ -306,7 +306,7 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
 (defun popweb-get-cursor-x-offset ()
   (if (derived-mode-p 'eaf-mode)
       30
-    (aref (aref (font-get-glyphs (font-at (point)) 65 66) 0) 4)))
+    0))
 
 (defun popweb-get-cursor-y-offset ()
   (if (derived-mode-p 'eaf-mode)
@@ -362,7 +362,7 @@ Otherwise return word around point."
 (defun popweb-web-window-can-hide ()
   (run-with-timer 1 nil '(lambda () (setq popweb-web-window-visible-p t))))
 
-(add-hook 'post-command-hook 'popweb-web-window-hide-after-move)
+(add-hook 'post-command-hook #'popweb-web-window-hide-after-move)
 
 (provide 'popweb)
 
