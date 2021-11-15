@@ -150,16 +150,18 @@ class WebWindow(QWidget):
         if screen_size.width() > 3000:
             self.zoom_factor = 2
 
-        self.js_code = ""
+        self.loading_js_code = ""
+        self.load_finish_js_code = ""
 
         self.dark_mode_js = open(os.path.join(os.path.dirname(__file__), "darkreader.js")).read()
 
         self.update_theme_mode()
 
         self.webview = QWebEngineView()
-        self.webview.loadStarted.connect(lambda : self.webview.setZoomFactor(self.zoom_factor))
-        self.webview.loadProgress.connect(lambda progress: self.execute_js_code())
-        self.webview.setZoomFactor(self.zoom_factor)
+        self.webview.loadStarted.connect(lambda : self.reset_zoom())
+        self.webview.loadProgress.connect(lambda progress: self.execute_loading_js_code())
+        self.webview.loadFinished.connect(lambda progress: self.execute_load_finish_js_code())
+        self.reset_zoom()
 
         self.vbox.addWidget(self.webview)
         self.setLayout(self.vbox)
@@ -179,16 +181,23 @@ class WebWindow(QWidget):
             import traceback
             traceback.print_exc()
 
+    def reset_zoom(self):
+        self.webview.setZoomFactor(self.zoom_factor)
+
     def update_theme_mode(self):
         self.theme_mode = get_emacs_func_result("popweb-get-theme-mode", [])
 
-    def execute_js_code(self):
-        if self.js_code != "":
-            self.webview.page().runJavaScript(self.js_code)
+    def execute_loading_js_code(self):
+        if self.loading_js_code != "":
+            self.webview.page().runJavaScript(self.loading_js_code)
 
         if self.theme_mode == "dark":
             self.load_dark_mode_js()
             self.enable_dark_mode()
+
+    def execute_load_finish_js_code(self):
+        if self.load_finish_js_code != "":
+            self.webview.page().runJavaScript(self.load_finish_js_code)
 
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.WindowDeactivate:
@@ -284,16 +293,14 @@ class POPWEB(object):
             self.enable_proxy()
 
     @PostGui()
-    def pop_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, js_code, use_proxy):
+    def update_katex_content(self, latex_string):
+        self.web_window.reset_zoom()
+
+        self.web_window.webview.page().runJavaScript(
+            '''katex.render("{}"'''.format(latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});")
+
+    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale):
         global screen_size
-
-        if use_proxy == "true":
-            self.enable_proxy()
-        else:
-            self.disable_proxy()
-
-        self.web_window.js_code = js_code
-        self.web_window.webview.load(QUrl(url))
 
         window_width = screen_size.width() * width_scale
         window_height = screen_size.height() * height_scale
@@ -308,6 +315,30 @@ class POPWEB(object):
         self.web_window.resize(window_width, window_height)
         self.web_window.move(window_x, window_y)
         self.web_window.show()
+
+    @PostGui()
+    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, latex_string):
+        self.disable_proxy()
+
+        self.web_window.reset_zoom()
+
+        self.web_window.loading_js_code = ""
+        self.web_window.load_finish_js_code = '''katex.render("{}"'''.format(latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});"
+        self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
+
+        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
+
+    @PostGui()
+    def pop_translate_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code, use_proxy):
+        if use_proxy == "true":
+            self.enable_proxy()
+        else:
+            self.disable_proxy()
+
+        self.web_window.loading_js_code = loading_js_code
+        self.web_window.webview.load(QUrl(url))
+
+        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
 
     @PostGui()
     def hide_web_window(self):

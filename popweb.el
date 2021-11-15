@@ -367,6 +367,14 @@ Otherwise return word around point."
 (defun popweb-get-theme-mode ()
   (format "%s" (frame-parameter nil 'background-mode)))
 
+(defun popweb--decode-string (str)
+  "Decode string STR with UTF-8 coding using Base64."
+  (decode-coding-string (base64-decode-string str) 'utf-8))
+
+(defun popweb--encode-string (str)
+  "Encode string STR with UTF-8 coding using Base64."
+  (base64-encode-string (encode-coding-string str 'utf-8)))
+
 (provide 'popweb)
 
 ;;; popweb.el ends here

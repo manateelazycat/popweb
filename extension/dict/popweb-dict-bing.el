@@ -97,7 +97,7 @@
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';")
          (use-proxy "false"))
     (popweb-say-word word)
-    (popweb-call-async "pop_web_window" x y x-offset y-offset width height url js-code use-proxy)
+    (popweb-call-async "pop_translate_window" x y x-offset y-offset width height url js-code use-proxy)
     (popweb-web-window-can-hide)))
 
 (defun popweb-dict-bing-input (&optional word)
