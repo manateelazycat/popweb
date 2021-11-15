@@ -24,7 +24,7 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtCore import QUrl, Qt, QEventLoop, QTimer
 from PyQt5.QtNetwork import QNetworkProxy, QNetworkProxyFactory
 from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QWidget, QApplication, QVBoxLayout, QMessageBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineScript, QWebEngineProfile, QWebEngineSettings
@@ -135,6 +135,29 @@ def get_emacs_func_result(method_name, args):
         result = epc_client.call_sync("eval-in-emacs", args)
         return result if result != [] else False
 
+class BrowserPage(QWebEnginePage):
+    def __init__(self):
+        QWebEnginePage.__init__(self)
+
+    def execute_javascript(self, script_src):
+        ''' Execute JavaScript.'''
+        # Build event loop.
+        self.loop = QEventLoop()
+
+        # Run JavaScript code.
+        self.runJavaScript(script_src, self.callback_js)
+
+        # Execute event loop, and wait event loop quit.
+        self.loop.exec()
+
+        # Return JavaScript function result.
+        return self.result
+
+    def callback_js(self, result):
+        ''' Callback of JavaScript, call loop.quit to jump code after loop.exec.'''
+        self.result = result
+        self.loop.quit()
+
 class WebWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -151,16 +174,19 @@ class WebWindow(QWidget):
             self.zoom_factor = 2
 
         self.loading_js_code = ""
-        self.load_finish_js_code = ""
+        self.load_finish_callback = None
 
         self.dark_mode_js = open(os.path.join(os.path.dirname(__file__), "darkreader.js")).read()
 
         self.update_theme_mode()
 
         self.webview = QWebEngineView()
+        self.web_page = BrowserPage()
+        self.webview.setPage(self.web_page)
+
         self.webview.loadStarted.connect(lambda : self.reset_zoom())
         self.webview.loadProgress.connect(lambda progress: self.execute_loading_js_code())
-        self.webview.loadFinished.connect(lambda progress: self.execute_load_finish_js_code())
+        self.webview.loadFinished.connect(self.execute_load_finish_js_code)
         self.reset_zoom()
 
         self.vbox.addWidget(self.webview)
@@ -196,8 +222,8 @@ class WebWindow(QWidget):
             self.enable_dark_mode()
 
     def execute_load_finish_js_code(self):
-        if self.load_finish_js_code != "":
-            self.webview.page().runJavaScript(self.load_finish_js_code)
+        if self.load_finish_callback != None:
+            self.load_finish_callback()
 
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.WindowDeactivate:
@@ -292,13 +318,6 @@ class POPWEB(object):
         else:
             self.enable_proxy()
 
-    @PostGui()
-    def update_katex_content(self, latex_string):
-        self.web_window.reset_zoom()
-
-        self.web_window.webview.page().runJavaScript(
-            '''katex.render("{}"'''.format(latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});")
-
     def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale):
         global screen_size
 
@@ -319,14 +338,29 @@ class POPWEB(object):
     @PostGui()
     def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, latex_string):
         self.disable_proxy()
-
-        self.web_window.reset_zoom()
-
         self.web_window.loading_js_code = ""
-        self.web_window.load_finish_js_code = '''katex.render("{}"'''.format(latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});"
+
+        self.latex_string = latex_string
+        self.web_window.load_finish_callback = self.render_katex
         self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
 
         self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
+
+    def render_katex(self):
+        self.web_window.reset_zoom()
+
+        self.web_window.webview.page().runJavaScript(
+            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});")
+
+        render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
+        render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
+        self.web_window.resize(render_width * self.web_window.zoom_factor * 1.2,
+                               render_height * self.web_window.zoom_factor)
+
+    @PostGui()
+    def update_katex_content(self, latex_string):
+        self.latex_string = latex_string
+        self.render_katex()
 
     @PostGui()
     def pop_translate_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code, use_proxy):
