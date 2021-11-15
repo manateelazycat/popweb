@@ -335,6 +335,7 @@ class POPWEB(object):
         self.web_window.move(window_x, window_y)
         self.web_window.show()
 
+    # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, latex_string):
         self.disable_proxy()
@@ -346,6 +347,7 @@ class POPWEB(object):
 
         self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
 
+    # KaTex plugin code, we should split those code out with dynamical module technology.
     def render_katex(self):
         self.web_window.reset_zoom()
 
@@ -357,11 +359,13 @@ class POPWEB(object):
         self.web_window.resize(render_width * self.web_window.zoom_factor * 1.2,
                                render_height * self.web_window.zoom_factor)
 
+    # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def update_katex_content(self, latex_string):
         self.latex_string = latex_string
         self.render_katex()
 
+    # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def pop_translate_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code, use_proxy):
         if use_proxy == "true":
