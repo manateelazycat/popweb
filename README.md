@@ -1,5 +1,5 @@
 # What is popweb?
-I want a pop-up window show translate result from Web service, keep simple UI, support voice and example sentence.
+I want a pop-up window display web multimedia content, such as, translation tooltip, LaTex preview, code completion etc.
 
 Browser related technology comes from my other project [Emacs Application Framework](https://github.com/emacs-eaf/emacs-application-framework)
 
@@ -11,6 +11,7 @@ Browser related technology comes from my other project [Emacs Application Framew
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 (require 'popweb-dict-bing)
 (require 'popweb-dict-youdao)
+(require 'popweb-katex)
 ```
 
 ## Usage
@@ -18,6 +19,9 @@ Browser related technology comes from my other project [Emacs Application Framew
 * popweb-dict-youdao-input: popup input translation window with Youdao
 * popweb-dict-bing-pointer: popup pointer translation window with Bing
 * popweb-dict-youdao-pointer: popup pointer translation window with Youdao
+* popweb-katex-show: show LaTex preview
+* popweb-katex-update: update LaTex preview
+* popweb-katex-hide: hide LaTex preview
 
 ## Proxy
 If you need to use a proxy to access the internet, one can configure the proxy settings.
@@ -43,4 +47,9 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 ## Popweb with Youdao translate.
 <p align="center">
   <img width="800" src="./img/dict-youdao.png">
+</p>
+
+## Popweb with KaTex.js preview.
+<p align="center">
+  <img width="800" src="./img/katex-preview.png">
 </p>
