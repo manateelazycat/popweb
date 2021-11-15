@@ -360,7 +360,7 @@ Otherwise return word around point."
     (setq popweb-web-window-visible-p nil)))
 
 (defun popweb-web-window-can-hide ()
-  (run-with-timer 1 nil '(lambda () (setq popweb-web-window-visible-p t))))
+  (run-with-timer 1 nil (lambda () (setq popweb-web-window-visible-p t))))
 
 (add-hook 'post-command-hook #'popweb-web-window-hide-after-move)
 
