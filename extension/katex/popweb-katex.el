@@ -107,7 +107,8 @@
     (if latex-string
         (if (not (eq latex-string webkit-katex-render--previous-math))
             (progn
-              (popweb-start 'popweb-katex-preview (list t latex-string))
+              (popweb-start 'popweb-katex-preview (list t
+                                                        (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
               (setq webkit-katex-render--previous-math latex-string)))
       (progn
         (popweb-start 'popweb-katex-preview (list nil "x")))))
