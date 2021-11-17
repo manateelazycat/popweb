@@ -353,7 +353,7 @@ class POPWEB(object):
         self.web_window.reset_zoom()
 
         self.web_window.webview.page().runJavaScript(
-            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});")
+            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false,displayMode: true});")
 
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
