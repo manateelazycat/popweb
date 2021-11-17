@@ -80,6 +80,7 @@
 ;;
 
 ;;; Require
+(require 'dash)
 (require 'popweb)
 (require 'math-at-point)
 
@@ -133,7 +134,9 @@
                 (setq abc latex-string)
                 (popweb-call-async "update_katex_content"
                                    x y x-offset y-offset width height t
-                                   (replace-regexp-in-string "\\\\" "\\\\" latex-string t t))
+                                   (--> latex-string
+                                        (replace-regexp-in-string "\\\\" "\\\\" it t t)
+                                        (replace-regexp-in-string "\n" "" it t t)))
                 (setq webkit-katex-render--previous-math latex-string)))
         (popweb-katex-hide)))))
 
