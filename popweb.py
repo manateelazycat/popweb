@@ -362,10 +362,11 @@ class POPWEB(object):
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def update_katex_content(self, latex_string):
+    def update_katex_content(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window, latex_string):
         self.web_window.show()
         self.latex_string = latex_string
         self.render_katex()
+        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()

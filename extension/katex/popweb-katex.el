@@ -119,13 +119,20 @@
   (interactive)
   (when (popweb-epc-live-p popweb-epc-process)
     (let* ((math-at-point (webkit-katex-render--math-at-point))
-           (pos (car math-at-point))
-           (latex-string (nth 1 math-at-point)))
+           (latex-string (nth 1 math-at-point))
+           (position (popweb-get-cursor-coordinate))
+           (x (car position))
+           (y (cdr position))
+           (x-offset (popweb-get-cursor-x-offset))
+           (y-offset (popweb-get-cursor-y-offset))
+           (width 0.1)
+           (height 0.1))
       (if latex-string
           (if (not (eq latex-string webkit-katex-render--previous-math))
               (progn
                 (setq abc latex-string)
                 (popweb-call-async "update_katex_content"
+                                   x y x-offset y-offset width height t
                                    (replace-regexp-in-string "\\\\" "\\\\" latex-string t t))
                 (setq webkit-katex-render--previous-math latex-string)))
         (popweb-katex-hide)))))
