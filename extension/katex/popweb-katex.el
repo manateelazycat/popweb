@@ -115,17 +115,18 @@
 
 (defun popweb-katex-update ()
   (interactive)
-  (let* ((math-at-point (webkit-katex-render--math-at-point))
-         (pos (car math-at-point))
-         (latex-string (nth 1 math-at-point)))
-    (if latex-string
-        (if (not (eq latex-string webkit-katex-render--previous-math))
-            (progn
-              (setq abc latex-string)
-              (popweb-call-async "update_katex_content"
-                                 (replace-regexp-in-string "\\\\" "\\\\" latex-string t t))
-              (setq webkit-katex-render--previous-math latex-string)))
-      (popweb-katex-hide))))
+  (when (popweb-epc-live-p popweb-epc-process)
+    (let* ((math-at-point (webkit-katex-render--math-at-point))
+           (pos (car math-at-point))
+           (latex-string (nth 1 math-at-point)))
+      (if latex-string
+          (if (not (eq latex-string webkit-katex-render--previous-math))
+              (progn
+                (setq abc latex-string)
+                (popweb-call-async "update_katex_content"
+                                   (replace-regexp-in-string "\\\\" "\\\\" latex-string t t))
+                (setq webkit-katex-render--previous-math latex-string)))
+        (popweb-katex-hide)))))
 
 (defun popweb-katex-hide ()
   (interactive)
