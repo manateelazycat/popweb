@@ -81,6 +81,7 @@
 
 ;;; Require
 (require 'popweb)
+(require 'math-at-point)
 
 ;;; Code:
 (setq popweb-katex-index-path (concat (file-name-directory load-file-name) "index.html"))
@@ -94,19 +95,52 @@
          (width 0.1)
          (height 0.1)
          (index_file popweb-katex-index-path)
-         (latex-string (nth 0 info)))
-    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height index_file latex-string)))
+         (show-window (nth 0 info))
+         (latex-string (nth 1 info)))
+    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height index_file show-window latex-string)))
 
-(defun popweb-katex-show (latex-string)
+(defun popweb-katex-show ()
   (interactive)
-  (popweb-start 'popweb-katex-preview (list latex-string)))
+  (let* ((math-at-point (webkit-katex-render--math-at-point))
+         (pos (car math-at-point))
+         (latex-string (nth 1 math-at-point)))
+    (if latex-string
+        (if (not (eq latex-string webkit-katex-render--previous-math))
+            (progn
+              (popweb-start 'popweb-katex-preview (list t latex-string))
+              (setq webkit-katex-render--previous-math latex-string)))
+      (progn
+        (popweb-start 'popweb-katex-preview (list nil "x")))))
+  (add-hook 'post-command-hook #'popweb-katex-update nil t))
 
-(defun popweb-katex-update (latex-string)
-  (popweb-call-async "update_katex_content" latex-string))
+(defun popweb-katex-update ()
+  (interactive)
+  (let* ((math-at-point (webkit-katex-render--math-at-point))
+         (pos (car math-at-point))
+         (latex-string (nth 1 math-at-point)))
+    (if latex-string
+        (if (not (eq latex-string webkit-katex-render--previous-math))
+            (progn
+              (setq abc latex-string)
+              (popweb-call-async "update_katex_content"
+                                 (replace-regexp-in-string "\\\\" "\\\\" latex-string t t))
+              (setq webkit-katex-render--previous-math latex-string)))
+      (popweb-katex-hide))))
 
 (defun popweb-katex-hide ()
   (interactive)
-  (popweb-call-async "hide_web_window"))
+  (popweb-call-async "katex_hide_web_window"))
+
+;;;###autoload
+(define-minor-mode popweb-katex-mode
+  "Toggle popweb-katex-mode"
+  nil nil nil
+  (if popweb-katex-mode
+      (progn
+        (popweb-katex-show))
+    (progn
+      (remove-hook 'post-command-hook #'popweb-katex-update t)
+      (popweb-katex-hide))))
 
 (provide 'popweb-katex)
 

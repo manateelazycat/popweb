@@ -318,7 +318,7 @@ class POPWEB(object):
         else:
             self.enable_proxy()
 
-    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale):
+    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window=True):
         global screen_size
 
         window_width = screen_size.width() * width_scale
@@ -333,11 +333,12 @@ class POPWEB(object):
         self.web_window.update_theme_mode()
         self.web_window.resize(window_width, window_height)
         self.web_window.move(window_x, window_y)
-        self.web_window.show()
+        if show_window:
+            self.web_window.show()
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, latex_string):
+    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
         self.disable_proxy()
         self.web_window.loading_js_code = ""
 
@@ -345,7 +346,7 @@ class POPWEB(object):
         self.web_window.load_finish_callback = self.render_katex
         self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
 
-        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
+        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     def render_katex(self):
@@ -362,6 +363,7 @@ class POPWEB(object):
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def update_katex_content(self, latex_string):
+        self.web_window.show()
         self.latex_string = latex_string
         self.render_katex()
 
@@ -382,6 +384,10 @@ class POPWEB(object):
     def hide_web_window(self):
         self.web_window.hide()
         self.web_window.webview.load(QUrl(""))
+
+    @PostGui()
+    def katex_hide_web_window(self):
+        self.web_window.hide()
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''
