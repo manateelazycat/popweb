@@ -104,14 +104,15 @@
   (let* ((math-at-point (webkit-katex-render--math-at-point))
          (pos (car math-at-point))
          (latex-string (nth 1 math-at-point)))
-    (if latex-string
-        (if (not (eq latex-string webkit-katex-render--previous-math))
-            (progn
-              (popweb-start 'popweb-katex-preview (list t
-                                                        (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
-              (setq webkit-katex-render--previous-math latex-string)))
-      (progn
-        (popweb-start 'popweb-katex-preview (list nil "e^{i\pi}+1=0")))))
+    (unless (popweb-epc-live-p popweb-epc-process)
+      (if latex-string
+          (if (not (eq latex-string webkit-katex-render--previous-math))
+              (progn
+                (popweb-start 'popweb-katex-preview (list t
+                                                          (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
+                (setq webkit-katex-render--previous-math latex-string)))
+        (progn
+          (popweb-start 'popweb-katex-preview (list nil "e^{i\pi}+1=0"))))))
   (add-hook 'post-command-hook #'popweb-katex-update nil t))
 
 (defun popweb-katex-update ()
