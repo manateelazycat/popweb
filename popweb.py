@@ -318,7 +318,7 @@ class POPWEB(object):
         else:
             self.enable_proxy()
 
-    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window=True):
+    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale):
         global screen_size
 
         window_width = screen_size.width() * width_scale
@@ -333,20 +333,33 @@ class POPWEB(object):
         self.web_window.update_theme_mode()
         self.web_window.resize(window_width, window_height)
         self.web_window.move(window_x, window_y)
-        if show_window:
-            self.web_window.show()
+        self.web_window.show()
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+
         self.disable_proxy()
         self.web_window.loading_js_code = ""
+
+        global screen_size
+
+        self.window_width = screen_size.width() * width_scale
+        self.window_height = screen_size.height() * height_scale
+        self.window_x = x + x_offset
+        if self.window_x + self.window_width > screen_size.width():
+            self.window_x = x - self.window_width - x_offset
+        self.window_y = y + y_offset
+        if self.window_y + self.window_height > screen_size.height():
+            self.window_y = y - self.window_height
+
+        self.show_window = show_window
 
         self.latex_string = latex_string
         self.web_window.load_finish_callback = self.render_katex
         self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
 
-        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
+        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     def render_katex(self):
@@ -357,16 +370,34 @@ class POPWEB(object):
 
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
+        # if (render_height)
+        self.web_window.update_theme_mode()
         self.web_window.resize(render_width * self.web_window.zoom_factor * 1.2,
                                render_height * self.web_window.zoom_factor)
+        self.web_window.move(self.window_x - render_width/2, self.window_y)
+        if self.show_window:
+            self.web_window.show()
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
     def update_katex_content(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window, latex_string):
-        self.web_window.show()
+        # self.web_window.show()
+        global screen_size
+
+        self.window_width = screen_size.width() * width_scale
+        self.window_height = screen_size.height() * height_scale
+        self.window_x = x + x_offset
+        if self.window_x + self.window_width > screen_size.width():
+            self.window_x = x - self.window_width - x_offset
+        self.window_y = y + y_offset
+        if self.window_y + self.window_height > screen_size.height():
+            self.window_y = y - self.window_height
+
+        self.show_window = show_window
+
         self.latex_string = latex_string
         self.render_katex()
-        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
+        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
