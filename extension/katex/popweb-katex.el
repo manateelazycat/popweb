@@ -111,7 +111,7 @@
                                                         (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
               (setq webkit-katex-render--previous-math latex-string)))
       (progn
-        (popweb-start 'popweb-katex-preview (list nil "x")))))
+        (popweb-start 'popweb-katex-preview (list nil "e^{i\pi}+1=0")))))
   (add-hook 'post-command-hook #'popweb-katex-update nil t))
 
 (defun popweb-katex-update ()
