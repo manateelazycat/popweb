@@ -147,8 +147,13 @@
   (ignore-errors
       (popweb-call-async "katex_hide_web_window")))
 
-(defun popweb-katex-hide-after-lose-focus ()
+(defun popweb-katex-hide-after-switch-buffer ()
   (unless (equal (current-buffer) popweb-katex-current-buffer)
+    (popweb-katex-hide)))
+
+(defun popweb-katex-hide-after-lose-focus ()
+  (if (frame-focus-state)
+      (popweb-katex-update)
     (popweb-katex-hide)))
 
 ;;;###autoload
@@ -159,10 +164,12 @@
       (progn
         (setq popweb-katex-current-buffer (current-buffer))
         (popweb-katex-show)
-        (add-hook 'buffer-list-update-hook 'popweb-katex-hide-after-lose-focus))
+        (add-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
+        (add-function :after after-focus-change-function #'popweb-katex-hide-after-lose-focus))
     (progn
-      (remove-hook 'buffer-list-update-hook 'popweb-katex-hide-after-lose-focus)
+      (remove-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
       (remove-hook 'post-command-hook #'popweb-katex-update t)
+      (remove-function after-focus-change-function #'popweb-katex-hide-after-lose-focus)
       (popweb-katex-hide))))
 
 (provide 'popweb-katex)
