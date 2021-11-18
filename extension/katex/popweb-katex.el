@@ -85,6 +85,10 @@
 (require 'math-at-point)
 
 ;;; Code:
+
+(defvar popweb-katex-current-buffer nil
+  "The current buffer.")
+
 (setq popweb-katex-index-path (concat (file-name-directory load-file-name) "index.html"))
 
 (defun popweb-katex-preview (info)
@@ -140,7 +144,12 @@
 
 (defun popweb-katex-hide ()
   (interactive)
-  (popweb-call-async "katex_hide_web_window"))
+  (ignore-errors
+      (popweb-call-async "katex_hide_web_window")))
+
+(defun popweb-katex-hide-after-lose-focus ()
+  (unless (equal (current-buffer) popweb-katex-current-buffer)
+    (popweb-katex-hide)))
 
 ;;;###autoload
 (define-minor-mode popweb-katex-mode
@@ -148,8 +157,11 @@
   nil nil nil
   (if popweb-katex-mode
       (progn
-        (popweb-katex-show))
+        (setq popweb-katex-current-buffer (current-buffer))
+        (popweb-katex-show)
+        (add-hook 'buffer-list-update-hook 'popweb-katex-hide-after-lose-focus))
     (progn
+      (remove-hook 'buffer-list-update-hook 'popweb-katex-hide-after-lose-focus)
       (remove-hook 'post-command-hook #'popweb-katex-update t)
       (popweb-katex-hide))))
 
