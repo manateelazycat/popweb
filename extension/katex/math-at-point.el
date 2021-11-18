@@ -128,13 +128,13 @@
 (defun webkit-katex-render--math-at-point ()
   "Return recognized math at point."
   (interactive)
-  (setq abc (condition-case err
-                (or (and (equal major-mode 'latex-mode)
-                         (webkit-katex-render--tex-math-at-point))
-                    (and (equal major-mode 'org-mode)
-                         (webkit-katex-render--org-math-at-point)))
-              (error
-               (message "[Error] webkit-kate-render--math-at-point, %s" (error-message-string err))
-               nil))))
+  (condition-case err
+      (or (and (equal major-mode 'latex-mode)
+               (webkit-katex-render--tex-math-at-point))
+          (and (equal major-mode 'org-mode)
+               (webkit-katex-render--org-math-at-point)))
+    (error
+     (message "[Error] webkit-kate-render--math-at-point, %s" (error-message-string err))
+     nil)))
 
 (provide 'math-at-point)
