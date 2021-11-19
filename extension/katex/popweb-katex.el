@@ -80,9 +80,15 @@
 ;;
 
 ;;; Require
+(require 'dash)
 (require 'popweb)
+(require 'math-at-point)
 
 ;;; Code:
+
+(defvar popweb-katex-current-buffer nil
+  "The current buffer.")
+
 (setq popweb-katex-index-path (concat (file-name-directory load-file-name) "index.html"))
 
 (defun popweb-katex-preview (info)
@@ -94,19 +100,77 @@
          (width 0.1)
          (height 0.1)
          (index_file popweb-katex-index-path)
-         (latex-string (nth 0 info)))
-    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height index_file latex-string)))
+         (show-window (nth 0 info))
+         (latex-string (nth 1 info)))
+    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height index_file show-window latex-string)))
 
-(defun popweb-katex-show (latex-string)
+(defun popweb-katex-show ()
   (interactive)
-  (popweb-start 'popweb-katex-preview (list latex-string)))
+  (let* ((math-at-point (webkit-katex-render--math-at-point))
+         (pos (car math-at-point))
+         (latex-string (nth 1 math-at-point)))
+    (if latex-string
+        (if (not (eq latex-string webkit-katex-render--previous-math))
+            (progn
+              (popweb-start 'popweb-katex-preview (list t
+                                                        (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
+              (setq webkit-katex-render--previous-math latex-string)))
+      (progn
+        (popweb-start 'popweb-katex-preview (list nil "e^{i\\\\pi}+1=0")))))
+  (add-hook 'post-command-hook #'popweb-katex-update nil t))
 
-(defun popweb-katex-update (latex-string)
-  (popweb-call-async "update_katex_content" latex-string))
+(defun popweb-katex-update ()
+  (interactive)
+  (when (popweb-epc-live-p popweb-epc-process)
+    (let* ((math-at-point (webkit-katex-render--math-at-point))
+           (latex-string (nth 1 math-at-point))
+           (position (popweb-get-cursor-coordinate))
+           (x (car position))
+           (y (cdr position))
+           (x-offset (popweb-get-cursor-x-offset))
+           (y-offset (popweb-get-cursor-y-offset))
+           (width 0.1)
+           (height 0.1))
+      (if latex-string
+          (if (not (eq latex-string webkit-katex-render--previous-math))
+              (progn
+                (popweb-call-async "update_katex_content"
+                                   x y x-offset y-offset width height t
+                                   (--> latex-string
+                                        (replace-regexp-in-string "\\\\" "\\\\" it t t)
+                                        (replace-regexp-in-string "\n" "" it t t)))
+                (setq webkit-katex-render--previous-math latex-string)))
+        (popweb-katex-hide)))))
 
 (defun popweb-katex-hide ()
   (interactive)
-  (popweb-call-async "hide_web_window"))
+  (ignore-errors
+      (popweb-call-async "katex_hide_web_window")))
+
+(defun popweb-katex-hide-after-switch-buffer ()
+  (unless (equal (current-buffer) popweb-katex-current-buffer)
+    (popweb-katex-hide)))
+
+(defun popweb-katex-hide-after-lose-focus ()
+  (if (frame-focus-state)
+      (popweb-katex-update)
+    (popweb-katex-hide)))
+
+;;;###autoload
+(define-minor-mode popweb-katex-mode
+  "Toggle popweb-katex-mode"
+  nil nil nil
+  (if popweb-katex-mode
+      (progn
+        (setq popweb-katex-current-buffer (current-buffer))
+        (popweb-katex-show)
+        (add-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
+        (add-function :after after-focus-change-function #'popweb-katex-hide-after-lose-focus))
+    (progn
+      (remove-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
+      (remove-hook 'post-command-hook #'popweb-katex-update t)
+      (remove-function after-focus-change-function #'popweb-katex-hide-after-lose-focus)
+      (popweb-katex-hide))))
 
 (provide 'popweb-katex)
 

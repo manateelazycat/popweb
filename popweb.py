@@ -337,33 +337,69 @@ class POPWEB(object):
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, latex_string):
+    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+
         self.disable_proxy()
         self.web_window.loading_js_code = ""
+
+        global screen_size
+
+        self.window_width = screen_size.width() * width_scale
+        self.window_height = screen_size.height() * height_scale
+        self.window_x = x + x_offset
+        if self.window_x + self.window_width > screen_size.width():
+            self.window_x = x - self.window_width - x_offset
+        self.window_y = y + y_offset
+        if self.window_y + self.window_height > screen_size.height():
+            self.window_y = y - self.window_height
+
+        self.show_window = show_window
 
         self.latex_string = latex_string
         self.web_window.load_finish_callback = self.render_katex
         self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
 
-        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
+        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     def render_katex(self):
         self.web_window.reset_zoom()
 
         self.web_window.webview.page().runJavaScript(
-            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false});")
+            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false,displayMode: true});")
 
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
-        self.web_window.resize(render_width * self.web_window.zoom_factor * 1.2,
-                               render_height * self.web_window.zoom_factor)
+        if (render_height == None) or (render_width == None):
+            render_width = 0
+            render_height = 0
+        self.web_window.update_theme_mode()
+        self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
+                               int(render_height * self.web_window.zoom_factor))
+        self.web_window.move(int(self.window_x - render_width/2), self.window_y)
+        if self.show_window:
+            self.web_window.show()
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def update_katex_content(self, latex_string):
+    def update_katex_content(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window, latex_string):
+        # self.web_window.show()
+        global screen_size
+
+        self.window_width = screen_size.width() * width_scale
+        self.window_height = screen_size.height() * height_scale
+        self.window_x = x + x_offset
+        if self.window_x + self.window_width > screen_size.width():
+            self.window_x = x - self.window_width - x_offset
+        self.window_y = y + y_offset
+        if self.window_y + self.window_height > screen_size.height():
+            self.window_y = y - self.window_height
+
+        self.show_window = show_window
+
         self.latex_string = latex_string
         self.render_katex()
+        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
@@ -382,6 +418,10 @@ class POPWEB(object):
     def hide_web_window(self):
         self.web_window.hide()
         self.web_window.webview.load(QUrl(""))
+
+    @PostGui()
+    def katex_hide_web_window(self):
+        self.web_window.hide()
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''
