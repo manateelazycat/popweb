@@ -370,11 +370,13 @@ class POPWEB(object):
 
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
-        # if (render_height)
+        if (render_height == None) or (render_width == None):
+            render_width = 0
+            render_height = 0
         self.web_window.update_theme_mode()
-        self.web_window.resize(render_width * self.web_window.zoom_factor * 1.2,
-                               render_height * self.web_window.zoom_factor)
-        self.web_window.move(self.window_x - render_width/2, self.window_y)
+        self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
+                               int(render_height * self.web_window.zoom_factor))
+        self.web_window.move(int(self.window_x - render_width/2), self.window_y)
         if self.show_window:
             self.web_window.show()
 
