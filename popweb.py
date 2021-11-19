@@ -24,7 +24,7 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QUrl, Qt, QEventLoop, QTimer
+from PyQt5.QtCore import QUrl, Qt, QEventLoop, QTimer, Qt
 from PyQt5.QtNetwork import QNetworkProxy, QNetworkProxyFactory
 from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QWidget, QApplication, QVBoxLayout, QMessageBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineScript, QWebEngineProfile, QWebEngineSettings
@@ -252,7 +252,6 @@ class POPWEB(object):
 
         # Build EPC server.
         self.server = ThreadingEPCServer(('localhost', 0), log_traceback=True)
-        # self.server = ThreadingEPCServer(('localhost', 0)
         # self.server.logger.setLevel(logging.DEBUG)
         self.server.allow_reuse_address = True
 
@@ -318,30 +317,7 @@ class POPWEB(object):
         else:
             self.enable_proxy()
 
-    def show_web_window(self, x, y, x_offset, y_offset, width_scale, height_scale):
-        global screen_size
-
-        window_width = screen_size.width() * width_scale
-        window_height = screen_size.height() * height_scale
-        window_x = x + x_offset
-        if window_x + window_width > screen_size.width():
-            window_x = x - window_width - x_offset
-        window_y = y + y_offset
-        if window_y + window_height > screen_size.height():
-            window_y = y - window_height
-
-        self.web_window.update_theme_mode()
-        self.web_window.resize(window_width, window_height)
-        self.web_window.move(window_x, window_y)
-        self.web_window.show()
-
-    # KaTex plugin code, we should split those code out with dynamical module technology.
-    @PostGui()
-    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
-
-        self.disable_proxy()
-        self.web_window.loading_js_code = ""
-
+    def adjust_web_window_position(self, x, y, x_offset, y_offset, width_scale, height_scale):
         global screen_size
 
         self.window_width = screen_size.width() * width_scale
@@ -353,53 +329,35 @@ class POPWEB(object):
         if self.window_y + self.window_height > screen_size.height():
             self.window_y = y - self.window_height
 
+    # KaTex plugin code, we should split those code out with dynamical module technology.
+    @PostGui()
+    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+        self.disable_proxy()
+        self.web_window.loading_js_code = ""
+
+        self.adjust_web_window_position(x, y, x_offset, y_offset, width_scale, height_scale)
+
         self.show_window = show_window
 
-        self.latex_string = latex_string
-        self.web_window.load_finish_callback = self.render_katex
-        self.web_window.webview.setUrl(QUrl.fromLocalFile(index_file))
+        index_html = open(index_file, "r").read().replace(
+            "BACKGROUND", get_emacs_func_result("popweb-get-theme-background", [])).replace(
+                "INDEX_DIR", os.path.dirname(index_file)).replace(
+                    "LATEX", latex_string)
+        # print(index_html)
+        self.web_window.webview.setHtml(index_html, QUrl("file://"))
 
-        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
+        QTimer().singleShot(100, self.render_katex)
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     def render_katex(self):
-        self.web_window.reset_zoom()
-
-        self.web_window.webview.page().runJavaScript(
-            '''katex.render("{}"'''.format(self.latex_string) + ", document.getElementById('katex-preview'), {throwOnError: false,displayMode: true});")
-
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
-        if (render_height == None) or (render_width == None):
-            render_width = 0
-            render_height = 0
         self.web_window.update_theme_mode()
         self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
                                int(render_height * self.web_window.zoom_factor))
         self.web_window.move(int(self.window_x - render_width/2), self.window_y)
         if self.show_window:
             self.web_window.show()
-
-    # KaTex plugin code, we should split those code out with dynamical module technology.
-    @PostGui()
-    def update_katex_content(self, x, y, x_offset, y_offset, width_scale, height_scale, show_window, latex_string):
-        # self.web_window.show()
-        global screen_size
-
-        self.window_width = screen_size.width() * width_scale
-        self.window_height = screen_size.height() * height_scale
-        self.window_x = x + x_offset
-        if self.window_x + self.window_width > screen_size.width():
-            self.window_x = x - self.window_width - x_offset
-        self.window_y = y + y_offset
-        if self.window_y + self.window_height > screen_size.height():
-            self.window_y = y - self.window_height
-
-        self.show_window = show_window
-
-        self.latex_string = latex_string
-        self.render_katex()
-        # self.katex_show_web_window(x, y, x_offset, y_offset, width_scale, height_scale, show_window)
 
     # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
@@ -412,7 +370,12 @@ class POPWEB(object):
         self.web_window.loading_js_code = loading_js_code
         self.web_window.webview.load(QUrl(url))
 
-        self.show_web_window(x, y, x_offset, y_offset, width_scale, height_scale)
+        self.adjust_web_window_position(x, y, x_offset, y_offset, width_scale, height_scale)
+
+        self.web_window.update_theme_mode()
+        self.web_window.resize(self.window_width, self.window_height)
+        self.web_window.move(self.window_x, self.window_y)
+        self.web_window.show()
 
     @PostGui()
     def hide_web_window(self):

@@ -367,6 +367,9 @@ Otherwise return word around point."
 (defun popweb-get-theme-mode ()
   (format "%s" (frame-parameter nil 'background-mode)))
 
+(defun popweb-get-theme-background ()
+  (popweb-color-name-to-hex (face-attribute 'default :background)))
+
 (defun popweb--decode-string (str)
   "Decode string STR with UTF-8 coding using Base64."
   (decode-coding-string (base64-decode-string str) 'utf-8))
@@ -374,6 +377,16 @@ Otherwise return word around point."
 (defun popweb--encode-string (str)
   "Encode string STR with UTF-8 coding using Base64."
   (base64-encode-string (encode-coding-string str 'utf-8)))
+
+(defun popweb-color-int-to-hex (int)
+  (substring (format (concat "%0" (int-to-string 4) "X") int) (- 2)))
+
+(defun popweb-color-name-to-hex (color)
+  (let ((components (x-color-values color)))
+    (concat "#"
+            (popweb-color-int-to-hex (nth 0 components))
+            (popweb-color-int-to-hex (nth 1 components))
+            (popweb-color-int-to-hex (nth 2 components)))))
 
 (provide 'popweb)
 
