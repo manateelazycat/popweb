@@ -129,17 +129,18 @@
            (y-offset (popweb-get-cursor-y-offset))
            (width 0.1)
            (height 0.1))
-      (if latex-string
-          (if (not (eq latex-string webkit-katex-render--previous-math))
-              (progn
-                (popweb-call-async "pop_latex_window" "latex"
-                                   x y x-offset y-offset width height popweb-latex-index-path
-                                   t
-                                   (--> latex-string
-                                     (replace-regexp-in-string "\\\\" "\\\\" it t t)
-                                     (replace-regexp-in-string "\n" "" it t t)))
-                (setq webkit-katex-render--previous-math latex-string)))
-        (popweb-latex-hide)))))
+      (if position
+        (if latex-string
+            (if (not (eq latex-string webkit-katex-render--previous-math))
+                (progn
+                  (popweb-call-async "pop_latex_window" "latex"
+                                     x y x-offset y-offset width height popweb-latex-index-path
+                                     t
+                                     (--> latex-string
+                                          (replace-regexp-in-string "\\\\" "\\\\" it t t)
+                                          (replace-regexp-in-string "\n" "" it t t)))
+                  (setq webkit-katex-render--previous-math latex-string)))
+          (popweb-latex-hide))))))
 
 (defun popweb-latex-hide ()
   (interactive)
