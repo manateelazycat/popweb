@@ -352,6 +352,9 @@ class POPWEB(object):
     def render_katex(self):
         render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
+        if (render_width == None) or (render_height == None):
+            render_width = 0
+            render_height = 0
         self.web_window.update_theme_mode()
         self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
                                int(render_height * self.web_window.zoom_factor))
