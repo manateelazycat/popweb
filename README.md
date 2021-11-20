@@ -48,7 +48,7 @@ If you use Socks5 as a local proxy, one can set proxy type with:
   <img width="800" src="./img/dict-youdao.png">
 </p>
 
-## Popweb with KaTex.js preview.
+## Popweb with LaTeX preview.
 <p align="center">
   <img width="800" src="./img/katex-preview.png">
 </p>
