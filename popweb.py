@@ -358,7 +358,10 @@ class POPWEB(object):
         self.web_window.update_theme_mode()
         self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
                                int(render_height * self.web_window.zoom_factor))
-        self.web_window.move(int(self.window_x - render_width/2), self.window_y)
+        if (int(self.window_x - render_width/2) > 0):
+            self.web_window.move(int(self.window_x - render_width/2), self.window_y)
+        else:
+            self.web_window.move(0, self.window_y)
         if self.show_window:
             self.web_window.show()
 
