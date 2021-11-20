@@ -370,14 +370,6 @@ Otherwise return word around point."
 (defun popweb-get-theme-background ()
   (popweb-color-name-to-hex (face-attribute 'default :background)))
 
-(defun popweb--decode-string (str)
-  "Decode string STR with UTF-8 coding using Base64."
-  (decode-coding-string (base64-decode-string str) 'utf-8))
-
-(defun popweb--encode-string (str)
-  "Encode string STR with UTF-8 coding using Base64."
-  (base64-encode-string (encode-coding-string str 'utf-8)))
-
 (defun popweb-color-int-to-hex (int)
   (substring (format (concat "%0" (int-to-string 4) "X") int) (- 2)))
 
