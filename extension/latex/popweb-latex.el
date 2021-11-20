@@ -1,15 +1,15 @@
-;;; popweb-katex.el --- Katex.js previewer plugin
+;;; popweb-latex.el --- Katex.js previewer plugin
 
-;; Filename: popweb-katex.el
+;; Filename: popweb-latex.el
 ;; Description: Katex.js previewer plugin
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2021-11-15 20:04:09
 ;; Version: 0.1
-;; Last-Updated: 2021-11-15 20:04:09
-;;           By: Andy Stewart
-;; URL: https://www.github.org/manateelazycat/popweb-katex
+;; Last-Updated: Sat Nov 20 04:34:02 2021 (-0500)
+;;           By: Mingde (Matthew) Zeng
+;; URL: https://www.github.org/manateelazycat/popweb-latex
 ;; Keywords:
 ;; Compatibility: GNU Emacs 29.0.50
 ;;
@@ -44,14 +44,14 @@
 
 ;;; Installation:
 ;;
-;; Put popweb-katex.el to your load-path.
+;; Put popweb-latex.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'popweb-katex)
+;; (require 'popweb-latex)
 ;;
 ;; No need more.
 
@@ -60,7 +60,7 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET popweb-katex RET
+;;      M-x customize-group RET popweb-latex RET
 ;;
 
 ;;; Change log:
@@ -86,12 +86,12 @@
 
 ;;; Code:
 
-(defvar popweb-katex-current-buffer nil
+(defvar popweb-latex-current-buffer nil
   "The current buffer.")
 
-(setq popweb-katex-index-path (concat (file-name-directory load-file-name) "index.html"))
+(setq popweb-latex-index-path (concat (file-name-directory load-file-name) "index.html"))
 
-(defun popweb-katex-preview (info)
+(defun popweb-latex-preview (info)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
          (y (cdr position))
@@ -101,9 +101,9 @@
          (height 0.1)
          (show-window (nth 0 info))
          (latex-string (nth 1 info)))
-    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height popweb-katex-index-path show-window latex-string)))
+    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string)))
 
-(defun popweb-katex-show ()
+(defun popweb-latex-show ()
   (interactive)
   (let* ((math-at-point (webkit-katex-render--math-at-point))
          (pos (car math-at-point))
@@ -111,13 +111,13 @@
     (if latex-string
         (if (not (eq latex-string webkit-katex-render--previous-math))
             (progn
-              (popweb-start 'popweb-katex-preview (list t
+              (popweb-start 'popweb-latex-preview (list t
                                                         (replace-regexp-in-string "\\\\" "\\\\" latex-string t t)))
               (setq webkit-katex-render--previous-math latex-string)))
-      (popweb-start 'popweb-katex-preview (list nil "e^{i\\\\pi}+1=0"))))
-  (add-hook 'post-command-hook #'popweb-katex-update nil t))
+      (popweb-start 'popweb-latex-preview (list nil "e^{i\\\\pi}+1=0"))))
+  (add-hook 'post-command-hook #'popweb-latex-update nil t))
 
-(defun popweb-katex-update ()
+(defun popweb-latex-update ()
   (interactive)
   (when (popweb-epc-live-p popweb-epc-process)
     (let* ((math-at-point (webkit-katex-render--math-at-point))
@@ -133,43 +133,43 @@
           (if (not (eq latex-string webkit-katex-render--previous-math))
               (progn
                 (popweb-call-async "pop_katex_window"
-                                   x y x-offset y-offset width height popweb-katex-index-path
+                                   x y x-offset y-offset width height popweb-latex-index-path
                                    t
                                    (--> latex-string
                                      (replace-regexp-in-string "\\\\" "\\\\" it t t)
                                      (replace-regexp-in-string "\n" "" it t t)))
                 (setq webkit-katex-render--previous-math latex-string)))
-        (popweb-katex-hide)))))
+        (popweb-latex-hide)))))
 
-(defun popweb-katex-hide ()
+(defun popweb-latex-hide ()
   (interactive)
   (ignore-errors
     (popweb-call-async "katex_hide_web_window")))
 
-(defun popweb-katex-hide-after-switch-buffer ()
-  (unless (equal (current-buffer) popweb-katex-current-buffer)
-    (popweb-katex-hide)))
+(defun popweb-latex-hide-after-switch-buffer ()
+  (unless (equal (current-buffer) popweb-latex-current-buffer)
+    (popweb-latex-hide)))
 
-(defun popweb-katex-hide-after-lose-focus ()
+(defun popweb-latex-hide-after-lose-focus ()
   (if (frame-focus-state)
-      (popweb-katex-update)
-    (popweb-katex-hide)))
+      (popweb-latex-update)
+    (popweb-latex-hide)))
 
 ;;;###autoload
-(define-minor-mode popweb-katex-mode
-  "Toggle popweb-katex-mode"
+(define-minor-mode popweb-latex-mode
+  "Toggle popweb-latex-mode"
   nil nil nil
-  (if popweb-katex-mode
+  (if popweb-latex-mode
       (progn
-        (setq popweb-katex-current-buffer (current-buffer))
-        (popweb-katex-show)
-        (add-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
-        (add-function :after after-focus-change-function #'popweb-katex-hide-after-lose-focus))
-    (remove-hook 'buffer-list-update-hook 'popweb-katex-hide-after-switch-buffer)
-    (remove-hook 'post-command-hook #'popweb-katex-update t)
-    (remove-function after-focus-change-function #'popweb-katex-hide-after-lose-focus)
-    (popweb-katex-hide)))
+        (setq popweb-latex-current-buffer (current-buffer))
+        (popweb-latex-show)
+        (add-hook 'buffer-list-update-hook 'popweb-latex-hide-after-switch-buffer)
+        (add-function :after after-focus-change-function #'popweb-latex-hide-after-lose-focus))
+    (remove-hook 'buffer-list-update-hook 'popweb-latex-hide-after-switch-buffer)
+    (remove-hook 'post-command-hook #'popweb-latex-update t)
+    (remove-function after-focus-change-function #'popweb-latex-hide-after-lose-focus)
+    (popweb-latex-hide)))
 
-(provide 'popweb-katex)
+(provide 'popweb-latex)
 
-;;; popweb-katex.el ends here
+;;; popweb-latex.el ends here

@@ -12,7 +12,7 @@ Browser related technology comes from my other project [Emacs Application Framew
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 (require 'popweb-dict-bing)
 (require 'popweb-dict-youdao)
-(require 'popweb-katex)
+(require 'popweb-latex)
 ```
 
 ## Usage
@@ -20,9 +20,9 @@ Browser related technology comes from my other project [Emacs Application Framew
 * popweb-dict-youdao-input: popup input translation window with Youdao
 * popweb-dict-bing-pointer: popup pointer translation window with Bing
 * popweb-dict-youdao-pointer: popup pointer translation window with Youdao
-* popweb-katex-show: show LaTex preview
-* popweb-katex-update: update LaTex preview
-* popweb-katex-hide: hide LaTex preview
+* popweb-latex-show: show LaTex preview
+* popweb-latex-update: update LaTex preview
+* popweb-latex-hide: hide LaTex preview
 
 ## Proxy
 If you need to use a proxy to access the internet, one can configure the proxy settings.
