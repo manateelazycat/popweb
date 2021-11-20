@@ -322,36 +322,6 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
     (setq popweb--first-start-args args)
     (popweb-start-process)))
 
-(defun popweb-prompt-input (prompt)
-  "Prompt input object for translate."
-  (read-string (format "%s(%s): " prompt (or (popweb-region-or-word) ""))
-               nil nil
-               (popweb-region-or-word)))
-
-(defun popweb-region-or-word ()
-  "Return region or word around point.
-If `mark-active' on, return region string.
-Otherwise return word around point."
-  (if mark-active
-      (buffer-substring-no-properties (region-beginning)
-                                      (region-end))
-    (thing-at-point 'word t)))
-
-(defun popweb-say-word (word)
-  (if (featurep 'cocoa)
-      (call-process-shell-command
-       (format "say %s" word) nil 0)
-    (let ((player (or (executable-find "mpv")
-                      (executable-find "mplayer")
-                      (executable-find "mpg123"))))
-      (if player
-          (start-process
-           player
-           nil
-           player
-           (format "http://dict.youdao.com/dictvoice?type=2&audio=%s" (url-hexify-string word)))
-        (message "mpv, mplayer or mpg123 is needed to play word voice")))))
-
 (defun popweb-get-theme-mode ()
   (format "%s" (frame-parameter nil 'background-mode)))
 

@@ -81,10 +81,9 @@
 
 ;;; Require
 (require 'popweb)
+(require 'popweb-dict)
 
 ;;; Code:
-
-(setq popweb-dict-youdao-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
 
 (defun popweb-dict-youdao-translate (info)
   (let* ((position (popweb-get-cursor-coordinate))
@@ -97,18 +96,18 @@
          (word (nth 0 info))
          (url (format "https://www.youdao.com/w/eng/%s" word))
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; "))
-    (popweb-say-word word)
-    (popweb-call-async "call_module_method" popweb-dict-youdao-module-path
+    (popweb-dict-say-word word)
+    (popweb-call-async "call_module_method" popweb-dict-module-path
                        "pop_translate_window" (list "dict_youdao" x y x-offset y-offset width height url js-code))
     (popweb-dict-youdao-web-window-can-hide)))
 
 (defun popweb-dict-youdao-input (&optional word)
   (interactive)
-  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-prompt-input "Youdao dict: ")))))
+  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-dict-prompt-input "Youdao dict: ")))))
 
 (defun popweb-dict-youdao-pointer ()
   (interactive)
-  (popweb-start 'popweb-dict-youdao-translate (list (popweb-region-or-word))))
+  (popweb-start 'popweb-dict-youdao-translate (list (popweb-dict-region-or-word))))
 
 (defvar popweb-dict-youdao-web-window-visible-p nil)
 
