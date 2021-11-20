@@ -52,3 +52,18 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 <p align="center">
   <img width="800" src="./img/katex-preview.png">
 </p>
+
+## Report bug
+Please use `emacs -q` and load a minimal setup with only popweb to verify that the bug is reproducible. If `emacs -q` works fine, probably something is wrong with your Emacs config.
+
+If the problem persists, please report it [here](https://github.com/manateelazycat/popweb/issues/new) with `*popweb*` buffer content, it contains many clues that can help us locate the problem faster.
+
+If you get a segfault error, please use the following way to collect crash information:
+1. Install gdb and turn on option `popweb-enable-debug`
+2. Use the command `popweb-stop-process` to stop the current process
+3. Restart popweb, send issue with `*popweb*` buffer content when next crash
+
+## Contributor
+<a href = "https://github.com/manateelazycat/popweb/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=manateelazycat/popweb"/>
+</a>
