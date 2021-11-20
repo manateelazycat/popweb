@@ -94,11 +94,10 @@
          (height 0.5)
          (word (nth 0 info))
          (url (format "http://www.bing.com/dict/search?mkt=zh-cn&q=%s" word))
-         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';")
-         (use-proxy "false"))
+         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"))
     (popweb-say-word word)
-    (popweb-call-async "pop_translate_window" x y x-offset y-offset width height url js-code use-proxy)
-    (popweb-web-window-can-hide)))
+    (popweb-call-async "pop_translate_window" "dict_bing" x y x-offset y-offset width height url js-code)
+    (popweb-dict-bing-web-window-can-hide)))
 
 (defun popweb-dict-bing-input (&optional word)
   (interactive)
@@ -108,6 +107,17 @@
   (interactive)
   (popweb-start 'popweb-dict-bing-translate (list (popweb-region-or-word))))
 
+(defvar popweb-dict-bing-web-window-visible-p nil)
+
+(defun popweb-dict-bing-web-window-hide-after-move ()
+  (when popweb-dict-bing-web-window-visible-p
+    (popweb-call-async "hide_web_window" "dict_bing")
+    (setq popweb-dict-bing-web-window-visible-p nil)))
+
+(defun popweb-dict-bing-web-window-can-hide ()
+  (run-with-timer 1 nil (lambda () (setq popweb-dict-bing-web-window-visible-p t))))
+
+(add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move)
 
 (provide 'popweb-dict-bing)
 

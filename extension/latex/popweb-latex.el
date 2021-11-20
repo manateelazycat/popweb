@@ -101,7 +101,7 @@
          (height 0.1)
          (show-window (nth 0 info))
          (latex-string (nth 1 info)))
-    (popweb-call-async "pop_katex_window" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string)))
+    (popweb-call-async "pop_latex_window" "latex" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string)))
 
 (defun popweb-latex-show ()
   (interactive)
@@ -132,7 +132,7 @@
       (if latex-string
           (if (not (eq latex-string webkit-katex-render--previous-math))
               (progn
-                (popweb-call-async "pop_katex_window"
+                (popweb-call-async "pop_latex_window" "latex"
                                    x y x-offset y-offset width height popweb-latex-index-path
                                    t
                                    (--> latex-string
@@ -144,7 +144,7 @@
 (defun popweb-latex-hide ()
   (interactive)
   (ignore-errors
-    (popweb-call-async "katex_hide_web_window")))
+    (popweb-call-async "hide_web_window" "latex")))
 
 (defun popweb-latex-hide-after-switch-buffer ()
   (unless (equal (current-buffer) popweb-latex-current-buffer)

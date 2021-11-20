@@ -94,11 +94,10 @@
          (height 0.5)
          (word (nth 0 info))
          (url (format "https://www.youdao.com/w/eng/%s" word))
-         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; ")
-         (use-proxy "false"))
+         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; "))
     (popweb-say-word word)
-    (popweb-call-async "pop_translate_window" x y x-offset y-offset width height url js-code use-proxy)
-    (popweb-web-window-can-hide)))
+    (popweb-call-async "pop_translate_window" "dict_youdao" x y x-offset y-offset width height url js-code)
+    (popweb-dict-youdao-web-window-can-hide)))
 
 (defun popweb-dict-youdao-input (&optional word)
   (interactive)
@@ -107,6 +106,18 @@
 (defun popweb-dict-youdao-pointer ()
   (interactive)
   (popweb-start 'popweb-dict-youdao-translate (list (popweb-region-or-word))))
+
+(defvar popweb-dict-youdao-web-window-visible-p nil)
+
+(defun popweb-dict-youdao-web-window-hide-after-move ()
+  (when popweb-dict-youdao-web-window-visible-p
+    (popweb-call-async "hide_web_window" "dict_youdao")
+    (setq popweb-dict-youdao-web-window-visible-p nil)))
+
+(defun popweb-dict-youdao-web-window-can-hide ()
+  (run-with-timer 1 nil (lambda () (setq popweb-dict-youdao-web-window-visible-p t))))
+
+(add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move)
 
 (provide 'popweb-dict-youdao)
 

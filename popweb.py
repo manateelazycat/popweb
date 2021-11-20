@@ -225,13 +225,6 @@ class WebWindow(QWidget):
         if self.load_finish_callback != None:
             self.load_finish_callback()
 
-    def eventFilter(self, source, event):
-        if event.type() == QtCore.QEvent.WindowDeactivate:
-            self.hide()
-            return True
-
-        return super(WebWindow, self).eventFilter(source, event)
-
     def load_dark_mode_js(self):
         self.webview.page().runJavaScript('''if (typeof DarkReader === 'undefined') {{ {} }} '''.format(self.dark_mode_js))
 
@@ -267,7 +260,7 @@ class POPWEB(object):
         self.server_thread = threading.Thread(target=self.server.serve_forever)
         self.server_thread.start()
 
-        self.web_window = WebWindow()
+        self.web_window_dict = {}
 
         # Pass epc port and webengine codec information to Emacs when first start POPWEB.
         eval_in_emacs('popweb--first-start', [self.server.server_address[1]])
@@ -317,80 +310,75 @@ class POPWEB(object):
         else:
             self.enable_proxy()
 
-    def adjust_web_window_position(self, x, y, x_offset, y_offset, width_scale, height_scale):
-        global screen_size
+    def get_web_window(self, module_name):
+        if module_name not in self.web_window_dict:
+            self.web_window_dict[module_name] = WebWindow()
 
-        self.window_width = screen_size.width() * width_scale
-        self.window_height = screen_size.height() * height_scale
-        self.window_x = x + x_offset
-        if self.window_x + self.window_width > screen_size.width():
-            self.window_x = x - self.window_width - x_offset
-        self.window_y = y + y_offset
-        if self.window_y + self.window_height > screen_size.height():
-            self.window_y = y - self.window_height
+        return self.web_window_dict[module_name]
 
     # KaTex plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def pop_katex_window(self, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
-        self.disable_proxy()
-        self.web_window.loading_js_code = ""
+    def pop_latex_window(self, module_name, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+        global screen_size
 
-        self.adjust_web_window_position(x, y, x_offset, y_offset, width_scale, height_scale)
+        def render_latex(web_window, window_x, window_y, show_window):
+            render_width = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
+            render_height = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
+            if render_width == None or render_height == None:
+                render_width = 0
+                render_height = 0
 
-        self.show_window = show_window
+            web_window.update_theme_mode()
+            web_window.resize(int(render_width * web_window.zoom_factor * 1.2),
+                                   int(render_height * web_window.zoom_factor))
 
+            if (int(window_x - render_width/2) > 0):
+                web_window.move(int(window_x - render_width/2), window_y)
+            else:
+                web_window.move(0, window_y)
+
+            if show_window:
+                web_window.show()
+
+        web_window = self.get_web_window(module_name)
         index_html = open(index_file, "r").read().replace(
             "BACKGROUND", get_emacs_func_result("popweb-get-theme-background", [])).replace(
                 "INDEX_DIR", os.path.dirname(index_file)).replace(
                     "LATEX", latex_string)
-        # print(index_html)
-        self.web_window.webview.setHtml(index_html, QUrl("file://"))
+        web_window.loading_js_code = ""
+        web_window.webview.setHtml(index_html, QUrl("file://"))
 
-        QTimer().singleShot(100, self.render_katex)
-
-    # KaTex plugin code, we should split those code out with dynamical module technology.
-    def render_katex(self):
-        render_width = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
-        render_height = self.web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
-        if (render_width == None) or (render_height == None):
-            render_width = 0
-            render_height = 0
-        self.web_window.update_theme_mode()
-        self.web_window.resize(int(render_width * self.web_window.zoom_factor * 1.2),
-                               int(render_height * self.web_window.zoom_factor))
-        if (int(self.window_x - render_width/2) > 0):
-            self.web_window.move(int(self.window_x - render_width/2), self.window_y)
-        else:
-            self.web_window.move(0, self.window_y)
-        if self.show_window:
-            self.web_window.show()
+        QTimer().singleShot(100, lambda : render_latex(web_window, x + x_offset, y + y_offset, show_window))
 
     # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def pop_translate_window(self, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code, use_proxy):
-        if use_proxy == "true":
-            self.enable_proxy()
-        else:
-            self.disable_proxy()
+    def pop_translate_window(self, module_name, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code):
+        global screen_size
 
-        self.web_window.loading_js_code = loading_js_code
-        self.web_window.webview.load(QUrl(url))
+        web_window = self.get_web_window(module_name)
 
-        self.adjust_web_window_position(x, y, x_offset, y_offset, width_scale, height_scale)
+        window_width = screen_size.width() * width_scale
+        window_height = screen_size.height() * height_scale
+        window_x = x + x_offset
+        if window_x + window_width > screen_size.width():
+            window_x = x - window_width - x_offset
+        window_y = y + y_offset
+        if window_y + window_height > screen_size.height():
+            window_y = y - window_height
 
-        self.web_window.update_theme_mode()
-        self.web_window.resize(self.window_width, self.window_height)
-        self.web_window.move(self.window_x, self.window_y)
-        self.web_window.show()
+        web_window.loading_js_code = loading_js_code
+        web_window.webview.load(QUrl(url))
+        web_window.update_theme_mode()
+        web_window.resize(window_width, window_height)
+        web_window.move(window_x, window_y)
+        web_window.show()
 
     @PostGui()
-    def hide_web_window(self):
-        self.web_window.hide()
-        self.web_window.webview.load(QUrl(""))
-
-    @PostGui()
-    def katex_hide_web_window(self):
-        self.web_window.hide()
+    def hide_web_window(self, module_name):
+        if module_name in self.web_window_dict:
+            web_window = self.web_window_dict[module_name]
+            web_window.hide()
+            web_window.webview.load(QUrl(""))
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''
