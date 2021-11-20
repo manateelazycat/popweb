@@ -142,7 +142,7 @@
 (defvar popweb-internal-process-prog nil)
 (defvar popweb-internal-process-args nil)
 
-(defvar popweb--first-translate-info nil)
+(defvar popweb--first-start-args nil)
 
 (defvar popweb--first-start-callback nil)
 
@@ -294,9 +294,9 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
                             :connection (popweb-epc-connect "localhost" popweb-epc-port)
                             ))
   (popweb-epc-init-epc-layer popweb-epc-process)
-  (when popweb--first-translate-info
-    (funcall popweb--first-start-callback popweb--first-translate-info))
-  (setq popweb--first-translate-info nil))
+  (when popweb--first-start-args
+    (funcall popweb--first-start-callback popweb--first-start-args))
+  (setq popweb--first-start-args nil))
 
 (defun popweb-get-cursor-coordinate ()
   (if (derived-mode-p 'eaf-mode)
@@ -319,7 +319,7 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
   (if (popweb-epc-live-p popweb-epc-process)
       (funcall first-start-callback args)
 
-    (setq popweb--first-translate-info args)
+    (setq popweb--first-start-args args)
     (popweb-start-process)))
 
 (defun popweb-prompt-input (prompt)

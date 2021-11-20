@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2021 Andy Stewart
+#
+# Author:     Andy Stewart <lazycat.manatee@gmail.com>
+# Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from PyQt5.QtCore import QUrl, QTimer
+import os
+
+def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+    screen_size = popweb.get_screen_size()
+
+    def render_latex(web_window, window_x, window_y, show_window):
+        render_width = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
+        render_height = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
+        if render_width == None or render_height == None:
+            render_width = 0
+            render_height = 0
+
+        web_window.update_theme_mode()
+        web_window.resize(int(render_width * web_window.zoom_factor * 1.2),
+                               int(render_height * web_window.zoom_factor))
+
+        if (int(window_x - render_width/2) > 0):
+            web_window.move(int(window_x - render_width/2), window_y)
+        else:
+            web_window.move(0, window_y)
+
+        if show_window:
+            web_window.show()
+
+    web_window = popweb.get_web_window(module_name)
+    index_html = open(index_file, "r").read().replace(
+        "BACKGROUND", popweb.get_emacs_func_result("popweb-get-theme-background", [])).replace(
+            "INDEX_DIR", os.path.dirname(index_file)).replace(
+                "LATEX", latex_string)
+    web_window.loading_js_code = ""
+    web_window.webview.setHtml(index_html, QUrl("file://"))
+
+    QTimer().singleShot(100, lambda : render_latex(web_window, x + x_offset, y + y_offset, show_window))

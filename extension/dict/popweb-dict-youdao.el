@@ -84,6 +84,8 @@
 
 ;;; Code:
 
+(setq popweb-dict-youdao-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
+
 (defun popweb-dict-youdao-translate (info)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
@@ -96,7 +98,8 @@
          (url (format "https://www.youdao.com/w/eng/%s" word))
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; "))
     (popweb-say-word word)
-    (popweb-call-async "pop_translate_window" "dict_youdao" x y x-offset y-offset width height url js-code)
+    (popweb-call-async "call_module_method" popweb-dict-youdao-module-path
+                       "pop_translate_window" (list "dict_youdao" x y x-offset y-offset width height url js-code))
     (popweb-dict-youdao-web-window-can-hide)))
 
 (defun popweb-dict-youdao-input (&optional word)

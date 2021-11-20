@@ -84,6 +84,8 @@
 
 ;;; Code:
 
+(setq popweb-dict-bing-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
+
 (defun popweb-dict-bing-translate (info)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
@@ -96,7 +98,8 @@
          (url (format "http://www.bing.com/dict/search?mkt=zh-cn&q=%s" word))
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"))
     (popweb-say-word word)
-    (popweb-call-async "pop_translate_window" "dict_bing" x y x-offset y-offset width height url js-code)
+    (popweb-call-async "call_module_method" popweb-dict-bing-module-path
+                       "pop_translate_window" (list "dict_bing" x y x-offset y-offset width height url js-code))
     (popweb-dict-bing-web-window-can-hide)))
 
 (defun popweb-dict-bing-input (&optional word)

@@ -90,6 +90,7 @@
   "The current buffer.")
 
 (setq popweb-latex-index-path (concat (file-name-directory load-file-name) "index.html"))
+(setq popweb-latex-module-path (concat (file-name-directory load-file-name) "popweb-latex.py"))
 
 (defun popweb-latex-preview (info)
   (let* ((position (popweb-get-cursor-coordinate))
@@ -101,7 +102,8 @@
          (height 0.1)
          (show-window (nth 0 info))
          (latex-string (nth 1 info)))
-    (popweb-call-async "pop_latex_window" "latex" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string)))
+    (popweb-call-async "call_module_method" popweb-latex-module-path
+                       "pop_latex_window" (list "latex" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string))))
 
 (defun popweb-latex-show ()
   (interactive)
@@ -132,12 +134,15 @@
       (if (and position latex-string)
           (if (not (eq latex-string webkit-katex-render--previous-math))
               (progn
-                (popweb-call-async "pop_latex_window" "latex"
-                                   x y x-offset y-offset width height popweb-latex-index-path
-                                   t
-                                   (--> latex-string
-                                     (replace-regexp-in-string "\\\\" "\\\\" it t t)
-                                     (replace-regexp-in-string "\n" "" it t t)))
+                (popweb-call-async "call_module_method" popweb-latex-module-path
+                                   "pop_latex_window"
+                                   (list
+                                    "latex"
+                                    x y x-offset y-offset width height popweb-latex-index-path
+                                    t
+                                    (--> latex-string
+                                      (replace-regexp-in-string "\\\\" "\\\\" it t t)
+                                      (replace-regexp-in-string "\n" "" it t t))))
                 (setq webkit-katex-render--previous-math latex-string)))
         (popweb-latex-hide)))))
 

@@ -24,19 +24,20 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QUrl, Qt, QEventLoop, QTimer, Qt
+from PyQt5.QtCore import QUrl, Qt, QEventLoop
 from PyQt5.QtNetwork import QNetworkProxy, QNetworkProxyFactory
-from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QWidget, QApplication, QVBoxLayout, QMessageBox
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineScript, QWebEngineProfile, QWebEngineSettings
-from epc.server import ThreadingEPCServer
-from functools import wraps
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
+from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout
 from epc.client import EPCClient
-import sys
+from epc.server import ThreadingEPCServer
 import base64
 import functools
+import importlib
 import logging
 import os
 import platform
+import signal
+import sys
 import threading
 
 class PostGui(QtCore.QObject):
@@ -261,6 +262,9 @@ class POPWEB(object):
         self.server_thread.start()
 
         self.web_window_dict = {}
+        self.module_dict = {}
+
+        self.get_emacs_func_result = get_emacs_func_result
 
         # Pass epc port and webengine codec information to Emacs when first start POPWEB.
         eval_in_emacs('popweb--first-start', [self.server.server_address[1]])
@@ -316,62 +320,24 @@ class POPWEB(object):
 
         return self.web_window_dict[module_name]
 
-    # KaTex plugin code, we should split those code out with dynamical module technology.
-    @PostGui()
-    def pop_latex_window(self, module_name, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
+    def get_module(self, module_path):
+        if module_path not in self.module_dict:
+            spec = importlib.util.spec_from_file_location(module_path, module_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.module_dict[module_path] = module
+
+        return self.module_dict[module_path]
+
+    def get_screen_size(self):
         global screen_size
+        return screen_size
 
-        def render_latex(web_window, window_x, window_y, show_window):
-            render_width = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
-            render_height = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
-            if render_width == None or render_height == None:
-                render_width = 0
-                render_height = 0
-
-            web_window.update_theme_mode()
-            web_window.resize(int(render_width * web_window.zoom_factor * 1.2),
-                                   int(render_height * web_window.zoom_factor))
-
-            if (int(window_x - render_width/2) > 0):
-                web_window.move(int(window_x - render_width/2), window_y)
-            else:
-                web_window.move(0, window_y)
-
-            if show_window:
-                web_window.show()
-
-        web_window = self.get_web_window(module_name)
-        index_html = open(index_file, "r").read().replace(
-            "BACKGROUND", get_emacs_func_result("popweb-get-theme-background", [])).replace(
-                "INDEX_DIR", os.path.dirname(index_file)).replace(
-                    "LATEX", latex_string)
-        web_window.loading_js_code = ""
-        web_window.webview.setHtml(index_html, QUrl("file://"))
-
-        QTimer().singleShot(100, lambda : render_latex(web_window, x + x_offset, y + y_offset, show_window))
-
-    # Dict plugin code, we should split those code out with dynamical module technology.
     @PostGui()
-    def pop_translate_window(self, module_name, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code):
-        global screen_size
-
-        web_window = self.get_web_window(module_name)
-
-        window_width = screen_size.width() * width_scale
-        window_height = screen_size.height() * height_scale
-        window_x = x + x_offset
-        if window_x + window_width > screen_size.width():
-            window_x = x - window_width - x_offset
-        window_y = y + y_offset
-        if window_y + window_height > screen_size.height():
-            window_y = y - window_height
-
-        web_window.loading_js_code = loading_js_code
-        web_window.webview.load(QUrl(url))
-        web_window.update_theme_mode()
-        web_window.resize(window_width, window_height)
-        web_window.move(window_x, window_y)
-        web_window.show()
+    def call_module_method(self, module_path, method_name, method_args):
+        module = self.get_module(module_path)
+        method_args.insert(0, self)
+        getattr(module, method_name)(*method_args)
 
     @PostGui()
     def hide_web_window(self, module_name):
@@ -385,9 +351,6 @@ class POPWEB(object):
         close_epc_client()
 
 if __name__ == "__main__":
-    import sys
-    import signal
-
     proxy_string = ""
 
     destroy_view_list = []
