@@ -158,7 +158,7 @@
 ;;;###autoload
 (define-minor-mode popweb-latex-mode
   "Toggle popweb-latex-mode"
-  nil nil nil
+  :group 'popweb-latex
   (if popweb-latex-mode
       (progn
         (setq popweb-latex-current-buffer (current-buffer))
