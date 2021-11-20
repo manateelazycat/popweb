@@ -5,8 +5,9 @@ Browser related technology comes from my other project [Emacs Application Framew
 
 ## Installation
 1. Make sure install PyQt5 from your operating system repository (DON'T install PyQt5 from pip, otherwise browser will crash)
-2. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
-3. In your `~/.emacs`, add the following two lines:
+2. Install library python-epc
+3. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
+4. In your `~/.emacs`, add the following two lines:
 ```elisp
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 (require 'popweb-dict-bing)
