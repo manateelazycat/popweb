@@ -1,7 +1,7 @@
 # popweb
 I always wanted a fast and responsive pop-up window to display multimedia content in Emacs, this includes web translation tooltip, LaTeX preview for math equations, code completion, etc. The creation and success of the [Emacs Application Framework](https://github.com/emacs-eaf/emacs-application-framework) gave a solid foundation for this to happen.
 
-Therefore I consider `popweb` to be a sister project, and a lightweight version of the EAF that precisely focuses on popup functionality, where some portion of code is shared between the two projects.
+I consider `popweb` to be a sister project, and a lightweight version of EAF that particularly focuses on multimedia popup functionality, some portion of code is shared between the two projects.
 
 ## Installation
 1. Make sure install PyQt5 from your operating system repository (DON'T install PyQt5 from pip, otherwise browser will crash). (Pro tip, the [EAF installer](https://github.com/emacs-eaf/emacs-application-framework) handles step 1 & 2 already!)
@@ -19,7 +19,7 @@ Therefore I consider `popweb` to be a sister project, and a lightweight version 
 ;; Chinese-English translation popup
 (add-to-list 'load-path "<path-to-popweb>/extension/dict") ;
 (require 'popweb-dict-bing) ; Translation using Bing
-(require 'popweb-dict-youdao) ; Translation using YouDao
+(require 'popweb-dict-youdao) ; Translation using Youdao
 ```
 
 ## Usage
@@ -27,10 +27,28 @@ Therefore I consider `popweb` to be a sister project, and a lightweight version 
 * `M-x popweb-dict-bing-pointer`: Translation at point with Bing
 * `M-x popweb-dict-bing-input`: Translation given an input with Bing
 * `M-x popweb-dict-youdao-pointer`: Translation at point with Youdao
-* `M-x popweb-dict-youdao-input`: Translation given an input with YouDao
+* `M-x popweb-dict-youdao-input`: Translation given an input with Youdao
+
+## Screenshots
+
+### LaTeX Preview
+<p align="center">
+  <img width="800" src="./img/latex-preview.gif">
+</p>
+
+### Bing Translation
+<p align="center">
+  <img width="800" src="./img/dict-bing.png">
+</p>
+
+### Youdao Translation
+<p align="center">
+  <img width="800" src="./img/dict-youdao.png">
+</p>
+
 
 ## Customization
-- Configure popup position using `popweb-popup-pos`:
+### Configure popup position using `popweb-popup-pos`
   - `"point-bottom"`: bottom of the cursor, default
   - `"point-bottom-right"`: bottom-right of the cursor
   - `"top-left"`: top-left of the screen
@@ -38,7 +56,7 @@ Therefore I consider `popweb` to be a sister project, and a lightweight version 
   - `"bottom-left"`: bottom-left: of the screen
   - `"bottom-right"`: bottom-right of the screen
 
-## Proxy
+### Proxy
 If you need to use a proxy to access the internet, one can configure the proxy settings.
 
 ```Elisp
@@ -53,22 +71,6 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 (setq popweb-proxy-type "socks5")
 ```
 
-# Screenshot
-
-## Popweb with LaTeX Preview.
-<p align="center">
-  <img width="800" src="./img/latex-preview.gif">
-</p>
-
-## Popweb with Bing translation.
-<p align="center">
-  <img width="800" src="./img/dict-bing.png">
-</p>
-
-## Popweb with Youdao translation.
-<p align="center">
-  <img width="800" src="./img/dict-youdao.png">
-</p>
 
 ## Report bug
 Please use `emacs -q` and load a minimal setup with only popweb to verify that the bug is reproducible. If `emacs -q` works fine, probably something is wrong with your Emacs config.
