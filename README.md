@@ -1,5 +1,7 @@
 # popweb
-I always wanted a fast and responsive pop-up window to display multimedia content in Emacs, this includes web translation tooltip, LaTeX preview for math equations, code completion, etc. The creation and success of the [Emacs Application Framework](https://github.com/emacs-eaf/emacs-application-framework) gave a solid foundation for this to happen. Therefore I consider `popweb` to be a sister project, a lightweight version from the EAF that precisely focuses on popup functionality, where some portion of code is shared between the two projects.
+I always wanted a fast and responsive pop-up window to display multimedia content in Emacs, this includes web translation tooltip, LaTeX preview for math equations, code completion, etc. The creation and success of the [Emacs Application Framework](https://github.com/emacs-eaf/emacs-application-framework) gave a solid foundation for this to happen.
+
+Therefore I consider `popweb` to be a sister project, and a lightweight version of the EAF that precisely focuses on popup functionality, where some portion of code is shared between the two projects.
 
 ## Installation
 1. Make sure install PyQt5 from your operating system repository (DON'T install PyQt5 from pip, otherwise browser will crash). (Pro tip, the [EAF installer](https://github.com/emacs-eaf/emacs-application-framework) handles step 1 & 2 already!)
@@ -52,6 +54,12 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 ```
 
 # Screenshot
+
+## Popweb with LaTeX Preview.
+<p align="center">
+  <img width="800" src="./img/katex-preview.png">
+</p>
+
 ## Popweb with Bing translation.
 <p align="center">
   <img width="800" src="./img/dict-bing.png">
@@ -60,11 +68,6 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 ## Popweb with Youdao translation.
 <p align="center">
   <img width="800" src="./img/dict-youdao.png">
-</p>
-
-## Popweb with LaTeX Preview.
-<p align="center">
-  <img width="800" src="./img/katex-preview.png">
 </p>
 
 ## Report bug
