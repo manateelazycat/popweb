@@ -33,7 +33,6 @@ from epc.server import ThreadingEPCServer
 import base64
 import functools
 import importlib
-import logging
 import os
 import platform
 import signal
@@ -332,6 +331,19 @@ class POPWEB(object):
     def get_screen_size(self):
         global screen_size
         return screen_size
+
+    def adjust_render_pos(self, render_x, render_y, x_offset, y_offset, render_w, render_h):
+        screen_size = self.get_screen_size()
+        render_x = max(int(render_x - render_w/2), 0)
+        render_y = max(render_y, 0)
+        if render_x + render_w > screen_size.width():
+            render_x = screen_size.width() - render_w
+        if render_y + render_h > screen_size.height():
+            print("over general", render_y, render_h, y_offset, render_y - render_h - y_offset)
+            render_y = render_y - render_h - y_offset
+        render_x = max(render_x, 0)
+        render_y = max(render_y, 0)
+        return render_x, render_y
 
     @PostGui()
     def call_module_method(self, module_path, method_name, method_args):
