@@ -57,7 +57,7 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 
 ## Popweb with LaTeX Preview.
 <p align="center">
-  <img width="800" src="./img/katex-preview.png">
+  <img width="800" src="./img/latex-preview.gif">
 </p>
 
 ## Popweb with Bing translation.
