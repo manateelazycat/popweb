@@ -166,11 +166,12 @@
   "Proxy Type used by POPWEB Browser.  The value is either \"http\" or \"socks5\"."
   :type 'string)
 
-(defcustom popweb-popup-pos "point"
+(defcustom popweb-popup-pos "point-bottom-right"
   "The position to display the poweb popup.
 
 Available options:
-- \"point\": around the point of the cursor
+- \"point-bottom\": bottom of the cursor
+- \"point-bottom-right\": bottom-right of the cursor
 - \"top-left\": top-left of the screen
 - \"top-right\": top-right of the screen
 - \"bottom-left\": bottom-left: of the screen
