@@ -114,10 +114,24 @@ def eval_in_emacs(method_name, args):
         # Call eval-in-emacs elisp function.
         epc_client.call("eval-in-emacs", args)
 
+
+def convert_emacs_bool(symbol_value, symbol_is_boolean):
+    if symbol_is_boolean == "t":
+        return symbol_value == True
+    else:
+        return symbol_value
+
 def get_emacs_vars(args):
     global epc_client
 
-    return list(map(lambda result: result if result != [] else False, epc_client.call_sync("get-emacs-vars", args)))
+    return list(map(lambda result: convert_emacs_bool(result[0], result[1]) if result != [] else False, epc_client.call_sync("get-emacs-vars", args)))
+
+def get_emacs_var(var_name):
+    global epc_client
+
+    (symbol_value, symbol_is_boolean) = epc_client.call_sync("get-emacs-var", [var_name])
+
+    return convert_emacs_bool(symbol_value, symbol_is_boolean)
 
 def get_emacs_func_result(method_name, args):
     global epc_client
@@ -185,7 +199,7 @@ class WebWindow(QWidget):
         self.webview.setPage(self.web_page)
 
         self.webview.loadStarted.connect(lambda : self.reset_zoom())
-        self.webview.loadProgress.connect(lambda progress: self.execute_loading_js_code())
+        self.webview.loadProgress.connect(lambda : self.execute_loading_js_code())
         self.webview.loadFinished.connect(self.execute_load_finish_js_code)
         self.reset_zoom()
 

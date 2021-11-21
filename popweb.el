@@ -7,7 +7,7 @@
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-06-15 14:10:12
 ;; Version: 0.5
-;; Last-Updated: Sun Nov 21 00:39:58 2021 (-0500)
+;; Last-Updated: Sun Nov 21 03:35:57 2021 (-0500)
 ;;           By: Mingde (Matthew) Zeng
 ;; URL: https://github.com/manateelazycat/popweb
 ;; Keywords:
@@ -99,8 +99,8 @@
            (lambda (mngr)
              (let ((mngr mngr))
                (popweb-epc-define-method mngr 'eval-in-emacs 'eval-in-emacs-func)
-               (popweb-epc-define-method mngr 'get-emacs-var 'get-emacs-var-func)
-               (popweb-epc-define-method mngr 'get-emacs-vars 'get-emacs-vars-func)
+               (popweb-epc-define-method mngr 'get-emacs-var 'popweb--get-emacs-var-func)
+               (popweb-epc-define-method mngr 'get-emacs-vars 'popweb--get-emacs-vars-func)
                ))))
     (if popweb-server
         (setq popweb-server-port (process-contact popweb-server :service))
@@ -125,7 +125,7 @@
                     (t arg))))
           (cdr args))))
 
-(defun get-emacs-var-func (var-name)
+(defun popweb--get-emacs-var-func (var-name)
   (let* ((var-symbol (intern var-name))
          (var-value (symbol-value var-symbol))
          ;; We need convert result of booleanp to string.
@@ -133,8 +133,8 @@
          (var-is-bool (prin1-to-string (booleanp var-value))))
     (list var-value var-is-bool)))
 
-(defun get-emacs-vars-func (&rest vars)
-  (mapcar #'(lambda (var-name) (symbol-value (intern var-name))) vars))
+(defun popweb--get-emacs-vars-func (&rest vars)
+  (mapcar #'popweb--get-emacs-var-func vars))
 
 (defvar popweb-epc-process nil)
 
