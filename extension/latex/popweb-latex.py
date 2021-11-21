@@ -37,9 +37,8 @@ def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offs
         web_window.render_height = render_height
         web_window.update_theme_mode()
         web_window.resize(render_width, render_height)
-    else:
-        window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, web_window.render_width, web_window.render_height)
 
+    window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, web_window.render_width, web_window.render_height)
     web_window.move(window_x, window_y)
 
     if show_window:
