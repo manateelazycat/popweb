@@ -361,13 +361,15 @@ class POPWEB(object):
         elif popup_pos == "bottom-right":
             render_x = screen_size.width() - render_w - x_offset
             render_y = screen_size.height() - render_h - y_offset
-        else:
+        elif popup_pos == "point":
             render_x = max(int(render_x - render_w/2), 0)
             render_y = max(render_y, 0)
             if render_x + render_w > screen_size.width():
                 render_x = screen_size.width() - render_w - x_offset
             if render_y + render_h > screen_size.height():
                 render_y = render_y - render_h - y_offset
+        else:
+            raise Exception('Cannot recognize Emacs variable popweb-popup-pos!')
         render_x = max(render_x, 0)
         render_y = max(render_y, 0)
         return render_x, render_y
