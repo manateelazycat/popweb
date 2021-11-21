@@ -7,7 +7,7 @@
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-06-15 14:10:12
 ;; Version: 0.5
-;; Last-Updated: Sun Nov 21 03:35:57 2021 (-0500)
+;; Last-Updated: Sun Nov 21 04:35:02 2021 (-0500)
 ;;           By: Mingde (Matthew) Zeng
 ;; URL: https://github.com/manateelazycat/popweb
 ;; Keywords:
@@ -164,6 +164,17 @@
 
 (defcustom popweb-proxy-type ""
   "Proxy Type used by POPWEB Browser.  The value is either \"http\" or \"socks5\"."
+  :type 'string)
+
+(defcustom popweb-popup-pos "point"
+  "The position to display the poweb popup.
+
+Available options:
+- \"point\": around the point of the cursor
+- \"top-left\": top-left of the screen
+- \"top-right\": top-right of the screen
+- \"bottom-left\": bottom-left: of the screen
+- \"bottom-right\": bottom-right of the screen"
   :type 'string)
 
 (defcustom popweb-enable-debug nil

@@ -348,12 +348,26 @@ class POPWEB(object):
 
     def adjust_render_pos(self, render_x, render_y, x_offset, y_offset, render_w, render_h):
         screen_size = self.get_screen_size()
-        render_x = max(int(render_x - render_w/2), 0)
-        render_y = max(render_y, 0)
-        if render_x + render_w > screen_size.width():
-            render_x = screen_size.width() - render_w
-        if render_y + render_h > screen_size.height():
-            render_y = render_y - render_h - y_offset
+        popup_pos = get_emacs_var("popweb-popup-pos")
+        if popup_pos == "top-left":
+            render_x = 0
+            render_y = 0
+        elif popup_pos == "top-right":
+            render_x = screen_size.width() - render_w - x_offset
+            render_y = 0
+        elif popup_pos == "bottom-left":
+            render_x = 0
+            render_y = screen_size.height() - render_h - y_offset
+        elif popup_pos == "bottom-right":
+            render_x = screen_size.width() - render_w - x_offset
+            render_y = screen_size.height() - render_h - y_offset
+        else:
+            render_x = max(int(render_x - render_w/2), 0)
+            render_y = max(render_y, 0)
+            if render_x + render_w > screen_size.width():
+                render_x = screen_size.width() - render_w - x_offset
+            if render_y + render_h > screen_size.height():
+                render_y = render_y - render_h - y_offset
         render_x = max(render_x, 0)
         render_y = max(render_y, 0)
         return render_x, render_y
