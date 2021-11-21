@@ -339,7 +339,6 @@ class POPWEB(object):
         if render_x + render_w > screen_size.width():
             render_x = screen_size.width() - render_w
         if render_y + render_h > screen_size.height():
-            print("over general", render_y, render_h, y_offset, render_y - render_h - y_offset)
             render_y = render_y - render_h - y_offset
         render_x = max(render_x, 0)
         render_y = max(render_y, 0)
