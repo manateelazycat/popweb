@@ -99,9 +99,10 @@
          (x-offset (popweb-get-cursor-x-offset))
          (y-offset (popweb-get-cursor-y-offset))
          (show-window (nth 0 info))
-         (latex-string (nth 1 info)))
+         (latex-string (nth 1 info))
+         (new-latex (not (string= latex-string webkit-katex-render--previous-math))))
     (popweb-call-async "call_module_method" popweb-latex-module-path
-                       "pop_latex_window" (list "latex" x y x-offset y-offset popweb-latex-index-path show-window latex-string))))
+                       "pop_latex_window" (list "latex" x y x-offset y-offset popweb-latex-index-path show-window new-latex latex-string))))
 
 (defun popweb-latex-show ()
   (interactive)
@@ -126,24 +127,26 @@
            (x (car position))
            (y (cdr position))
            (x-offset (popweb-get-cursor-x-offset))
-           (y-offset (popweb-get-cursor-y-offset)))
+           (y-offset (popweb-get-cursor-y-offset))
+           (new-latex (not (string= latex-string webkit-katex-render--previous-math))))
       (if (and position latex-string)
-          (if (not (eq latex-string webkit-katex-render--previous-math))
-              (progn
-                (popweb-call-async "call_module_method" popweb-latex-module-path
-                                   "pop_latex_window"
-                                   (list
-                                    "latex"
-                                    x y x-offset y-offset popweb-latex-index-path
-                                    t
-                                    (--> latex-string
-                                      (replace-regexp-in-string "\\\\" "\\\\" it t t)
-                                      (replace-regexp-in-string "\n" "" it t t))))
-                (setq webkit-katex-render--previous-math latex-string)))
+          (progn
+            (popweb-call-async "call_module_method" popweb-latex-module-path
+                               "pop_latex_window"
+                               (list
+                                "latex"
+                                x y x-offset y-offset popweb-latex-index-path
+                                t
+                                new-latex
+                                (--> latex-string
+                                     (replace-regexp-in-string "\\\\" "\\\\" it t t)
+                                     (replace-regexp-in-string "\n" "" it t t))))
+            (setq webkit-katex-render--previous-math latex-string))
         (popweb-latex-hide)))))
 
 (defun popweb-latex-hide ()
   (interactive)
+  (setq webkit-katex-render--previous-math nil)
   (ignore-errors
     (popweb-call-async "hide_web_window" "latex")))
 
