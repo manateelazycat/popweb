@@ -24,6 +24,7 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from PyQt5 import QtCore
+from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QUrl, Qt, QEventLoop
 from PyQt5.QtNetwork import QNetworkProxy, QNetworkProxyFactory
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
@@ -197,6 +198,8 @@ class WebWindow(QWidget):
         self.webview = QWebEngineView()
         self.web_page = BrowserPage()
         self.webview.setPage(self.web_page)
+
+        self.web_page.setBackgroundColor(QColor(get_emacs_func_result("popweb-get-theme-background", [])))
 
         self.webview.loadStarted.connect(lambda : self.reset_zoom())
         self.webview.loadProgress.connect(lambda : self.execute_loading_js_code())
