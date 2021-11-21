@@ -28,11 +28,8 @@ def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, width_sc
     window_width = screen_size.width() * width_scale
     window_height = screen_size.height() * height_scale
     window_x = x + x_offset
-    if window_x + window_width > screen_size.width():
-        window_x = x - window_width - x_offset
     window_y = y + y_offset
-    if window_y + window_height > screen_size.height():
-        window_y = y - window_height
+    window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, window_width, window_height)
 
     web_window.loading_js_code = loading_js_code
     web_window.webview.load(QUrl(url))

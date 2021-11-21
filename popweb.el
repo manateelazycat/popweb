@@ -7,8 +7,8 @@
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-06-15 14:10:12
 ;; Version: 0.5
-;; Last-Updated: Sun Oct 24 01:42:08 2021 (-0400)
-;;           By: Andy Stewart
+;; Last-Updated: Sun Nov 21 00:39:58 2021 (-0500)
+;;           By: Mingde (Matthew) Zeng
 ;; URL: https://github.com/manateelazycat/popweb
 ;; Keywords:
 ;; Compatibility: emacs-version >= 27
@@ -81,7 +81,7 @@
 (require 'popweb-epc)
 
 (defgroup popweb nil
-  "Emacs Application Framework."
+  "POPWEB group."
   :group 'applications)
 
 (defvar popweb-server nil
@@ -204,6 +204,13 @@ Turn on this option will improve start speed."
                   (not (string-match-p "QT_SCREEN_SCALE_FACTOR" var))))
            process-environment))))
 
+(defun popweb-restart-process ()
+  "Stop and restart POPWEB process."
+  (interactive)
+  (popweb-kill-process)
+  (popweb-start-process)
+  (message "Popweb process restarted."))
+
 (defun popweb-start-process ()
   "Start POPWEB process if it isn't started."
   (unless (popweb-epc-live-p popweb-epc-process)
@@ -248,10 +255,8 @@ Turn on this option will improve start speed."
 
 (defvar popweb-stop-process-hook nil)
 
-(defun popweb-kill-process (&optional restart)
-  "Stop POPWEB process and kill all POPWEB buffers.
-
-If RESTART is non-nil, cached URL and app-name will not be cleared."
+(defun popweb-kill-process ()
+  "Stop POPWEB process and kill all POPWEB buffers."
   (interactive)
 
   ;; Run stop process hooks.

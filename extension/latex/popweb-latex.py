@@ -22,9 +22,7 @@
 from PyQt5.QtCore import QUrl, QTimer
 import os
 
-def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, width_scale, height_scale, index_file, show_window, latex_string):
-    screen_size = popweb.get_screen_size()
-
+def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, index_file, show_window, latex_string):
     def render_latex(web_window, window_x, window_y, show_window):
         render_width = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
@@ -32,14 +30,13 @@ def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, width_scale,
             render_width = 0
             render_height = 0
 
+        render_width = int(render_width * web_window.zoom_factor * 1.2)
+        render_height = int(render_height * web_window.zoom_factor)
         web_window.update_theme_mode()
-        web_window.resize(int(render_width * web_window.zoom_factor * 1.2),
-                               int(render_height * web_window.zoom_factor))
+        web_window.resize(render_width, render_height)
 
-        if (int(window_x - render_width/2) > 0):
-            web_window.move(int(window_x - render_width/2), window_y)
-        else:
-            web_window.move(0, window_y)
+        window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, render_width, render_height)
+        web_window.move(window_x, window_y)
 
         if show_window:
             web_window.show()

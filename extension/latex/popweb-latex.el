@@ -7,7 +7,7 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2021-11-15 20:04:09
 ;; Version: 0.1
-;; Last-Updated: Sat Nov 20 04:34:02 2021 (-0500)
+;; Last-Updated: Sun Nov 21 02:10:12 2021 (-0500)
 ;;           By: Mingde (Matthew) Zeng
 ;; URL: https://www.github.org/manateelazycat/popweb-latex
 ;; Keywords:
@@ -98,12 +98,10 @@
          (y (cdr position))
          (x-offset (popweb-get-cursor-x-offset))
          (y-offset (popweb-get-cursor-y-offset))
-         (width 0.1)
-         (height 0.1)
          (show-window (nth 0 info))
          (latex-string (nth 1 info)))
     (popweb-call-async "call_module_method" popweb-latex-module-path
-                       "pop_latex_window" (list "latex" x y x-offset y-offset width height popweb-latex-index-path show-window latex-string))))
+                       "pop_latex_window" (list "latex" x y x-offset y-offset popweb-latex-index-path show-window latex-string))))
 
 (defun popweb-latex-show ()
   (interactive)
@@ -128,9 +126,7 @@
            (x (car position))
            (y (cdr position))
            (x-offset (popweb-get-cursor-x-offset))
-           (y-offset (popweb-get-cursor-y-offset))
-           (width 0.1)
-           (height 0.1))
+           (y-offset (popweb-get-cursor-y-offset)))
       (if (and position latex-string)
           (if (not (eq latex-string webkit-katex-render--previous-math))
               (progn
@@ -138,7 +134,7 @@
                                    "pop_latex_window"
                                    (list
                                     "latex"
-                                    x y x-offset y-offset width height popweb-latex-index-path
+                                    x y x-offset y-offset popweb-latex-index-path
                                     t
                                     (--> latex-string
                                       (replace-regexp-in-string "\\\\" "\\\\" it t t)
