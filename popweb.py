@@ -178,7 +178,10 @@ class WebWindow(QWidget):
         super().__init__()
         global screen_size
 
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.ToolTip)
+        if platform.system() == "Windows":
+            self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool | Qt.WindowDoesNotAcceptFocus)
+        else:
+            self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.ToolTip)
         self.setContentsMargins(0, 0, 0, 0)
 
         self.vbox = QVBoxLayout(self)
