@@ -93,7 +93,7 @@
 
 (defun popweb--start-epc-server ()
   "Function to start the EPC server."
-  (unless popweb-server
+  (unless (process-live-p popweb-server)
     (setq popweb-server
           (popweb-epc-server-start
            (lambda (mngr)
