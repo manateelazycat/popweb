@@ -32,6 +32,6 @@ def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, width_sc
     web_window.loading_js_code = loading_js_code
     web_window.webview.load(QUrl(url))
     web_window.update_theme_mode()
-    web_window.resize(window_width, window_height)
-    web_window.move(window_x, window_y)
+    web_window.resize(int(window_width), int(window_height))
+    web_window.move(int(window_x), int(window_y))
     web_window.show()
