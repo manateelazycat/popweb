@@ -101,25 +101,30 @@
                        "pop_translate_window" (list "dict_bing" x y x-offset y-offset width height url js-code))
     (popweb-dict-bing-web-window-can-hide)))
 
+;;;###autoload
 (defun popweb-dict-bing-input (&optional word)
   (interactive)
-  (popweb-start 'popweb-dict-bing-translate (list (or word (popweb-dict-prompt-input "Bing dict: ")))))
+  (popweb-start 'popweb-dict-bing-translate (list (or word (popweb-dict-prompt-input "Bing dict: "))))
+  (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
 
+;;;###autoload
 (defun popweb-dict-bing-pointer ()
   (interactive)
-  (popweb-start 'popweb-dict-bing-translate (list (popweb-dict-region-or-word))))
+  (popweb-start 'popweb-dict-bing-translate (list (popweb-dict-region-or-word)))
+  (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
 
 (defvar popweb-dict-bing-web-window-visible-p nil)
 
 (defun popweb-dict-bing-web-window-hide-after-move ()
   (when popweb-dict-bing-web-window-visible-p
     (popweb-call-async "hide_web_window" "dict_bing")
-    (setq popweb-dict-bing-web-window-visible-p nil)))
+    (setq popweb-dict-bing-web-window-visible-p nil)
+    (remove-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move)))
 
 (defun popweb-dict-bing-web-window-can-hide ()
   (run-with-timer 1 nil (lambda () (setq popweb-dict-bing-web-window-visible-p t))))
 
-(add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move)
+
 
 (provide 'popweb-dict-bing)
 

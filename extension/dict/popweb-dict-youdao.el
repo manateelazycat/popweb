@@ -101,25 +101,28 @@
                        "pop_translate_window" (list "dict_youdao" x y x-offset y-offset width height url js-code))
     (popweb-dict-youdao-web-window-can-hide)))
 
+;;;###autoload
 (defun popweb-dict-youdao-input (&optional word)
   (interactive)
-  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-dict-prompt-input "Youdao dict: ")))))
+  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-dict-prompt-input "Youdao dict: "))))
+  (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
 
+;;;###autoload
 (defun popweb-dict-youdao-pointer ()
   (interactive)
-  (popweb-start 'popweb-dict-youdao-translate (list (popweb-dict-region-or-word))))
+  (popweb-start 'popweb-dict-youdao-translate (list (popweb-dict-region-or-word)))
+  (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
 
 (defvar popweb-dict-youdao-web-window-visible-p nil)
 
 (defun popweb-dict-youdao-web-window-hide-after-move ()
   (when popweb-dict-youdao-web-window-visible-p
     (popweb-call-async "hide_web_window" "dict_youdao")
-    (setq popweb-dict-youdao-web-window-visible-p nil)))
+    (setq popweb-dict-youdao-web-window-visible-p nil)
+    (remove-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move)))
 
 (defun popweb-dict-youdao-web-window-can-hide ()
   (run-with-timer 1 nil (lambda () (setq popweb-dict-youdao-web-window-visible-p t))))
-
-(add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move)
 
 (provide 'popweb-dict-youdao)
 
