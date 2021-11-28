@@ -7,7 +7,7 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2021-11-15 20:04:09
 ;; Version: 0.1
-;; Last-Updated: Sun Nov 21 02:10:12 2021 (-0500)
+;; Last-Updated: Sun Nov 28 01:43:58 2021 (-0500)
 ;;           By: Mingde (Matthew) Zeng
 ;; URL: https://www.github.org/manateelazycat/popweb-latex
 ;; Keywords:
@@ -98,11 +98,20 @@
          (y (cdr position))
          (x-offset (popweb-get-cursor-x-offset))
          (y-offset (popweb-get-cursor-y-offset))
+         (frame-x (car (frame-position)))
+         (frame-y (cdr (frame-position)))
+         (frame-w (frame-outer-width))
+         (frame-h (frame-outer-height))
          (show-window (nth 0 info))
          (latex-string (nth 1 info))
          (new-latex (not (string= latex-string webkit-katex-render--previous-math))))
     (popweb-call-async "call_module_method" popweb-latex-module-path
-                       "pop_latex_window" (list "latex" x y x-offset y-offset popweb-latex-index-path show-window new-latex latex-string))))
+                       "pop_latex_window"
+                       (list
+                        "latex" popweb-latex-index-path
+                        x y x-offset y-offset
+                        frame-x frame-y frame-w frame-h
+                        show-window new-latex latex-string))))
 
 (defun popweb-latex-show ()
   (interactive)
@@ -128,14 +137,19 @@
            (y (cdr position))
            (x-offset (popweb-get-cursor-x-offset))
            (y-offset (popweb-get-cursor-y-offset))
+           (frame-x (car (frame-position)))
+           (frame-y (cdr (frame-position)))
+           (frame-w (frame-outer-width))
+           (frame-h (frame-outer-height))
            (new-latex (not (string= latex-string webkit-katex-render--previous-math))))
       (if (and position latex-string)
           (progn
             (popweb-call-async "call_module_method" popweb-latex-module-path
                                "pop_latex_window"
                                (list
-                                "latex"
-                                x y x-offset y-offset popweb-latex-index-path
+                                "latex" popweb-latex-index-path
+                                x y x-offset y-offset
+                                frame-x frame-y frame-w frame-h
                                 t
                                 new-latex
                                 (--> latex-string

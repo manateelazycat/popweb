@@ -21,13 +21,11 @@
 
 from PyQt5.QtCore import QUrl
 
-def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, width_scale, height_scale, url, loading_js_code):
-    screen_size = popweb.get_screen_size()
+def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, width_scale, height_scale, url, loading_js_code):
     web_window = popweb.get_web_window(module_name)
-
-    window_width = screen_size.width() * width_scale
-    window_height = screen_size.height() * height_scale
-    window_x, window_y = popweb.adjust_render_pos(x + x_offset, y + y_offset, x_offset, y_offset, window_width, window_height)
+    window_width = frame_w * width_scale
+    window_height = frame_h * height_scale
+    window_x, window_y = popweb.adjust_render_pos(x + x_offset, y + y_offset, x_offset, y_offset, window_width, window_height, frame_x, frame_y, frame_w, frame_h)
 
     web_window.loading_js_code = loading_js_code
     web_window.webview.load(QUrl(url))

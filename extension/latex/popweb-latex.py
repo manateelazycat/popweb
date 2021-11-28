@@ -22,7 +22,7 @@
 from PyQt5.QtCore import QUrl, QTimer
 import os
 
-def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offset, show_window, new_latex):
+def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, show_window, new_latex):
     if new_latex == True:
         render_width = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetWidth;")
         render_height = web_window.web_page.execute_javascript("document.getElementById('katex-preview').offsetHeight;")
@@ -38,13 +38,13 @@ def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offs
         web_window.update_theme_mode()
         web_window.resize(render_width, render_height)
 
-    window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, web_window.render_width, web_window.render_height)
+    window_x, window_y = popweb.adjust_render_pos(window_x, window_y, x_offset, y_offset, web_window.render_width, web_window.render_height, frame_x, frame_y, frame_w, frame_h)
     web_window.move(window_x, window_y)
 
     if show_window:
         web_window.show()
 
-def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, index_file, show_window, new_latex, latex_string):
+def pop_latex_window(popweb, module_name, index_file, x, y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, show_window, new_latex, latex_string):
     web_window = popweb.get_web_window(module_name)
     index_html = open(index_file, "r").read().replace(
         "BACKGROUND", popweb.get_emacs_func_result("popweb-get-theme-background", [])).replace(
@@ -54,4 +54,4 @@ def pop_latex_window(popweb, module_name, x, y, x_offset, y_offset, index_file, 
     if new_latex == True:
         web_window.webview.setHtml(index_html, QUrl("file://"))
 
-    QTimer().singleShot(100, lambda : adjust_latex_window(popweb, web_window, x + x_offset, y + y_offset, x_offset, y_offset, show_window, new_latex))
+    QTimer().singleShot(100, lambda : adjust_latex_window(popweb, web_window, x + x_offset, y + y_offset, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, show_window, new_latex))

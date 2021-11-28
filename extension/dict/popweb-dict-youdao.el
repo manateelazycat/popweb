@@ -7,8 +7,8 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2021-11-13 23:11:15
 ;; Version: 0.1
-;; Last-Updated: 2021-11-13 23:11:15
-;;           By: Andy Stewart
+;; Last-Updated: Sun Nov 28 01:43:58 2021 (-0500)
+;;           By: Mingde (Matthew) Zeng
 ;; URL: https://www.github.org/manateelazycat/popweb-dict-youdao
 ;; Keywords:
 ;; Compatibility: GNU Emacs 29.0.50
@@ -91,14 +91,24 @@
          (y (cdr position))
          (x-offset (popweb-get-cursor-x-offset))
          (y-offset (popweb-get-cursor-y-offset))
-         (width 0.35)
-         (height 0.5)
+         (frame-x (car (frame-position)))
+         (frame-y (cdr (frame-position)))
+         (frame-w (frame-outer-width))
+         (frame-h (frame-outer-height))
+         (width-scale 0.35)
+         (height-scale 0.5)
          (word (nth 0 info))
          (url (format "https://www.youdao.com/w/eng/%s" word))
          (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; "))
     (popweb-dict-say-word word)
     (popweb-call-async "call_module_method" popweb-dict-module-path
-                       "pop_translate_window" (list "dict_youdao" x y x-offset y-offset width height url js-code))
+                       "pop_translate_window"
+                       (list
+                        "dict_youdao"
+                        x y x-offset y-offset
+                        frame-x frame-y frame-w frame-h
+                        width-scale height-scale
+                        url js-code))
     (popweb-dict-youdao-web-window-can-hide)))
 
 ;;;###autoload
@@ -116,7 +126,7 @@
 (defvar popweb-dict-youdao-web-window-visible-p nil)
 
 (defun popweb-dict-youdao-web-window-hide-after-move ()
-  (when popweb-dict-youdao-web-window-visible-p
+  (when (and popweb-dict-youdao-web-window-visible-p (popweb-epc-live-p popweb-epc-process))
     (popweb-call-async "hide_web_window" "dict_youdao")
     (setq popweb-dict-youdao-web-window-visible-p nil)
     (remove-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move)))

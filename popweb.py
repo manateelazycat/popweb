@@ -348,38 +348,33 @@ class POPWEB(object):
 
         return self.module_dict[module_path]
 
-    def get_screen_size(self):
-        global screen_size
-        return screen_size
-
-    def adjust_render_pos(self, render_x, render_y, x_offset, y_offset, render_w, render_h):
-        screen_size = self.get_screen_size()
+    def adjust_render_pos(self, render_x, render_y, x_offset, y_offset, render_w, render_h, frame_x, frame_y, frame_w, frame_h):
         popup_pos = get_emacs_var("popweb-popup-pos")
         if popup_pos == "top-left":
-            render_x = 0
-            render_y = 0
+            render_x = frame_x
+            render_y = frame_y
         elif popup_pos == "top-right":
-            render_x = screen_size.width() - render_w - x_offset
-            render_y = 0
+            render_x = frame_x + frame_w - render_w - x_offset
+            render_y = frame_y
         elif popup_pos == "bottom-left":
-            render_x = 0
-            render_y = screen_size.height() - render_h - y_offset
+            render_x = frame_x
+            render_y = frame_y + frame_h - render_h - y_offset
         elif popup_pos == "bottom-right":
-            render_x = screen_size.width() - render_w - x_offset
-            render_y = screen_size.height() - render_h - y_offset
+            render_x = frame_x + frame_w - render_w - x_offset
+            render_y = frame_y + frame_h - render_h - y_offset
         elif popup_pos == "point-bottom":
             render_x = max(int(render_x - render_w/2), 0)
             render_y = max(render_y, 0)
-            if render_x + render_w > screen_size.width():
-                render_x = screen_size.width() - render_w - x_offset
-            if render_y + render_h > screen_size.height():
+            if render_x + render_w > frame_x + frame_w:
+                render_x = frame_x + frame_w - render_w - x_offset
+            if render_y + render_h > frame_y + frame_h:
                 render_y = render_y - render_h - y_offset
         elif popup_pos == "point-bottom-right":
             render_x = max(render_x, 0)
             render_y = max(render_y, 0)
-            if render_x + render_w > screen_size.width():
-                render_x = screen_size.width() - render_w - x_offset
-            if render_y + render_h > screen_size.height():
+            if render_x + render_w > frame_x + frame_w:
+                render_x = frame_x + frame_w - render_w - x_offset
+            if render_y + render_h > frame_y + frame_h:
                 render_y = render_y - render_h - y_offset
         else:
             raise Exception('Cannot recognize Emacs variable popweb-popup-pos!')
