@@ -153,6 +153,7 @@
                                 t
                                 new-latex
                                 (--> latex-string
+                                     (replace-regexp-in-string "\\\\label{.*}" "" it t t)
                                      (replace-regexp-in-string "\\\\" "\\\\" it t t)
                                      (replace-regexp-in-string "\n" "" it t t))))
             (setq webkit-katex-render--previous-math latex-string))
