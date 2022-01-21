@@ -7,7 +7,7 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2021-11-15 20:04:09
 ;; Version: 0.1
-;; Last-Updated: Sun Nov 28 01:43:58 2021 (-0500)
+;; Last-Updated: Fri Jan 21 01:27:21 2022 (-0500)
 ;;           By: Mingde (Matthew) Zeng
 ;; URL: https://www.github.org/manateelazycat/popweb-latex
 ;; Keywords:
@@ -86,13 +86,14 @@
 
 ;;; Code:
 
-(defvar popweb-latex-current-buffer nil
-  "The current buffer.")
+(defvar popweb-latex-popup-foreground nil
+  "Non-nil if popweb-latex popup is at the foreground.")
 
 (setq popweb-latex-index-path (concat (file-name-directory load-file-name) "index.html"))
 (setq popweb-latex-module-path (concat (file-name-directory load-file-name) "popweb-latex.py"))
 
 (defun popweb-latex-preview (info)
+  (setq popweb-latex-popup-foreground t)
   (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
          (y (cdr position))
@@ -130,6 +131,7 @@
 (defun popweb-latex-update ()
   (interactive)
   (when (popweb-epc-live-p popweb-epc-process)
+    (setq popweb-latex-popup-foreground t)
     (let* ((math-at-point (webkit-katex-render--math-at-point))
            (latex-string (nth 1 math-at-point))
            (position (popweb-get-cursor-coordinate))
@@ -161,12 +163,14 @@
 
 (defun popweb-latex-hide ()
   (interactive)
-  (setq webkit-katex-render--previous-math nil)
-  (ignore-errors
-    (popweb-call-async "hide_web_window" "latex")))
+  (when popweb-latex-popup-foreground
+    (setq webkit-katex-render--previous-math nil)
+    (setq popweb-latex-popup-foreground nil)
+    (ignore-errors
+      (popweb-call-async "hide_web_window" "latex"))))
 
 (defun popweb-latex-hide-after-switch-buffer ()
-  (unless (equal (current-buffer) popweb-latex-current-buffer)
+  (when (not popweb-latex-mode)
     (popweb-latex-hide)))
 
 (defun popweb-latex-hide-after-lose-focus ()
@@ -180,11 +184,10 @@
   :group 'popweb-latex
   (if popweb-latex-mode
       (progn
-        (setq popweb-latex-current-buffer (current-buffer))
         (popweb-latex-show)
-        (add-hook 'buffer-list-update-hook 'popweb-latex-hide-after-switch-buffer)
+        (add-hook 'window-state-change-hook 'popweb-latex-hide-after-switch-buffer)
         (add-function :after after-focus-change-function #'popweb-latex-hide-after-lose-focus))
-    (remove-hook 'buffer-list-update-hook 'popweb-latex-hide-after-switch-buffer)
+    (remove-hook 'window-state-change-hook 'popweb-latex-hide-after-switch-buffer)
     (remove-hook 'post-command-hook #'popweb-latex-update t)
     (remove-function after-focus-change-function #'popweb-latex-hide-after-lose-focus)
     (popweb-latex-hide)))
