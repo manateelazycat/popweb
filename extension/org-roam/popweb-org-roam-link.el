@@ -6,6 +6,8 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2022-01-25-23:00:00
 ;; Version: 0.1
+;; Last-Updated: 2021-11-21 07:32:38
+;;           By: Andy Stewart
 ;; URL: https://www.github.org/manateelazycat/popweb-dict
 ;; Keywords:
 ;; Compatibility: GNU Emacs 29.0.50
@@ -76,6 +78,14 @@
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
+(defcustom org-roam-link-popup-window-width-scale 0.8
+  "The popup window's width scale of Emacs's"
+  :type '(float))
+
+(defcustom org-roam-link-popup-window-height-scale 0.5
+  "The popup window's height scale of Emacs's"
+  :type '(float))
+
 (setq popweb-org-roam-link-module-path (concat (file-name-directory load-file-name) "popweb-org-roam-link.py"))
 
 (defun link-at-point ()
@@ -127,6 +137,8 @@
                         popweb-org-roam-link-index-path
                         x y x-offset y-offset
                         frame-x frame-y frame-w frame-h
+                        org-roam-link-popup-window-width-scale
+                        org-roam-link-popup-window-height-scale
                         show-window new-html html-string))
     (popweb-org-roam-link-preview-window-can-hide)))
 
@@ -151,6 +163,30 @@
     (ignore-errors
       (popweb-call-async "hide_web_window" "org_roam"))
     (remove-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move)))
+
+(defun -posframe-tip (string)
+  "Show STRING using posframe-show."
+  (unless (and (require 'posframe nil t) (posframe-workable-p))
+    (error "Posframe not workable"))
+
+    (if string
+        (progn
+          (with-current-buffer (get-buffer-create "Org Roam Tip")
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (insert string)
+              (goto-char (point-min))))
+          (posframe-show "Org Roam Tip"
+                         :left-fringe 8
+                         :right-fringe 8
+                         :internal-border-color (face-foreground 'default)
+                         :internal-border-width 1)
+          (unwind-protect
+              (push (read-event) unread-command-events)
+            (progn
+              (posframe-delete "Org Roam Tip")
+              (other-frame 0))))
+      (message "Nothing to look up")))
 
 (provide 'popweb-org-roam-link)
 ;;; popweb-org-roam-link.el ends here
