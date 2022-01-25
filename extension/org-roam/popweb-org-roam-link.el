@@ -66,20 +66,17 @@
 ;;; TODO
 ;;
 
-
+;;; Require
 (require 'ox)
 (require 'org-transclusion)
 (require 'popweb)
 
-
+;;; Code:
 (defvar org-roam-link-preview--previous-html nil)
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
 (setq popweb-org-roam-link-module-path (concat (file-name-directory load-file-name) "popweb-org-roam-link.py"))
-;; (defcustom popweb-org-roam-link-index-path (format "file:%s" (plist-get (cdr (car org-publish-project-alist)) :publishing-directory))
-;;   "Default org publishing-directory"
-;;   :type '(string))
 
 (defun link-at-point ()
   (save-excursion
@@ -154,30 +151,6 @@
     (ignore-errors
       (popweb-call-async "hide_web_window" "org_roam"))
     (remove-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move)))
-
-(defun -posframe-tip (string)
-  "Show STRING using posframe-show."
-  (unless (and (require 'posframe nil t) (posframe-workable-p))
-    (error "Posframe not workable"))
-
-    (if string
-        (progn
-          (with-current-buffer (get-buffer-create "Org Roam Tip")
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (insert string)
-              (goto-char (point-min))))
-          (posframe-show "Org Roam Tip"
-                         :left-fringe 8
-                         :right-fringe 8
-                         :internal-border-color (face-foreground 'default)
-                         :internal-border-width 1)
-          (unwind-protect
-              (push (read-event) unread-command-events)
-            (progn
-              (posframe-delete "Org Roam Tip")
-              (other-frame 0))))
-      (message "Nothing to look up")))
 
 (provide 'popweb-org-roam-link)
 ;;; popweb-org-roam-link.el ends here
