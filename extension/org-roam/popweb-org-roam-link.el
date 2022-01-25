@@ -53,7 +53,7 @@
       nil)))
 
 (defun popweb-org-roam-link-preview (info)
-  (let* ((popweb-org-roam-link-index-path (format "file:%s" (file-truename (plist-get (cdr (car org-publish-project-alist)) :base-directory))))
+  (let* ((popweb-org-roam-link-index-path (concat "file:" (file-truename default-directory)))
          (position (popweb-get-cursor-coordinate))
          (x (car position))
          (y (cdr position))
