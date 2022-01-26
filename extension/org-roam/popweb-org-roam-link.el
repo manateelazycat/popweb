@@ -98,21 +98,22 @@
       (cond ((and (string= "id" (org-element-property :type link)) id)
              (let*
               ((mkr (org-id-find id t))
-               (content (plist-get (org-transclusion-content-org-marker mkr plist) :src-content))
+               (content (org-element-context (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
                (label-list (with-temp-buffer
                              (insert content)
                              (org-element-map (org-element-parse-buffer) 'footnote-reference
                                (lambda (reference)
                                  (org-element-property :label reference)))))
-               (footnote-string-list
-                (with-temp-buffer
-                  (insert-file-contents (aref (org-roam-node-from-id id) 1))
-                  (-map (lambda (label) (buffer-substring-no-properties
-                                         (nth 1 (org-footnote-get-definition label))
-                                         (nth 2 (org-footnote-get-definition label))))
-                        label-list)))
-               (context (concat content (substring (format "%s" footnote-string-list) 1 -1))))
-              context))
+               )
+              (with-temp-buffer
+                (insert-file-contents (aref (org-roam-node-from-id id) 1))
+                (-map (lambda (label)
+                        (setq content
+                              (concat content (buffer-substring-no-properties
+                                               (nth 1 (org-footnote-get-definition label))
+                                               (nth 2 (org-footnote-get-definition label))))))
+                      label-list))
+              content))
            (label
             (let*
               ((footnote (buffer-substring-no-properties
@@ -177,30 +178,6 @@
     (ignore-errors
       (popweb-call-async "hide_web_window" "org_roam"))
     (remove-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move)))
-
-(defun -posframe-tip (string)
-  "Show STRING using posframe-show."
-  (unless (and (require 'posframe nil t) (posframe-workable-p))
-    (error "Posframe not workable"))
-
-    (if string
-        (progn
-          (with-current-buffer (get-buffer-create "Org Roam Tip")
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (insert string)
-              (goto-char (point-min))))
-          (posframe-show "Org Roam Tip"
-                         :left-fringe 8
-                         :right-fringe 8
-                         :internal-border-color (face-foreground 'default)
-                         :internal-border-width 1)
-          (unwind-protect
-              (push (read-event) unread-command-events)
-            (progn
-              (posframe-delete "Org Roam Tip")
-              (other-frame 0))))
-      (message "Nothing to look up")))
 
 (provide 'popweb-org-roam-link)
 ;;; popweb-org-roam-link.el ends here
