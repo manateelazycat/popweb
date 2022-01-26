@@ -8,12 +8,12 @@
 ;; Version: 0.1
 ;; Last-Updated: 2021-11-21 07:32:38
 ;;           By: Andy Stewart
-;; URL: https://www.github.org/manateelazycat/popweb-dict
+;; URL: https://www.github.com/manateelazycat/popweb-dict
 ;; Keywords:
 ;; Compatibility: GNU Emacs 29.0.50
 ;;
 ;; Features that might be required by this library:
-;; Package-Requires: ((org) (org-transclusion "1.2.0"))
+;; Package-Requires: ((org) (org-roam "20220121.2350") (org-transclusion "20220114.9"))
 ;;
 ;;
 
@@ -70,6 +70,7 @@
 
 ;;; Require
 (require 'ox)
+(require 'org-roam)
 (require 'org-transclusion)
 (require 'popweb)
 
@@ -88,7 +89,7 @@
 
 (setq popweb-org-roam-link-module-path (concat (file-name-directory load-file-name) "popweb-org-roam-link.py"))
 
-(defun link-at-point ()
+(defun get-org-context-at-point ()
   (save-excursion
     (let* ((plist)
            (link (org-element-context))
@@ -97,8 +98,21 @@
       (cond ((and (string= "id" (org-element-property :type link)) id)
              (let*
               ((mkr (org-id-find id t))
-              (content (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
-              content))
+               (content (plist-get (org-transclusion-content-org-marker mkr plist) :src-content))
+               (label-list (with-temp-buffer
+                             (insert content)
+                             (org-element-map (org-element-parse-buffer) 'footnote-reference
+                               (lambda (reference)
+                                 (org-element-property :label reference)))))
+               (footnote-string-list
+                (with-temp-buffer
+                  (insert-file-contents (aref (org-roam-node-from-id id) 1))
+                  (-map (lambda (label) (buffer-substring-no-properties
+                                         (nth 1 (org-footnote-get-definition label))
+                                         (nth 2 (org-footnote-get-definition label))))
+                        label-list)))
+               (context (concat content (substring (format "%s" footnote-string-list) 1 -1))))
+              context))
            (label
             (let*
               ((footnote (buffer-substring-no-properties
@@ -109,9 +123,9 @@
             ""))
       )))
 
-(defun get-html-from-link ()
-  (if (not (string-empty-p (link-at-point)))
-      (org-export-string-as (link-at-point) 'html)
+(defun get-html-from-org-context ()
+  (if (not (string-empty-p (get-org-context-at-point)))
+      (org-export-string-as (get-org-context-at-point) 'html)
     (progn
       (user-error "%s" "Nothing to preview or this kind of link is not supported yet!")
       nil)))
@@ -147,7 +161,7 @@
 
 (defun popweb-org-roam-link-show ()
   (interactive)
-  (let* ((html-string (get-html-from-link)))
+  (let* ((html-string (get-html-from-org-context)))
     (if html-string
         (if (not (eq html-string org-roam-link-preview--previous-html))
             (progn
