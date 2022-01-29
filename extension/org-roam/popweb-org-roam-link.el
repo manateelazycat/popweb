@@ -77,6 +77,7 @@
 
 ;;; Code:
 (defvar org-roam-link-preview--previous-html nil)
+
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
@@ -122,8 +123,7 @@
                                       (nth 2 (org-footnote-get-definition label)))))
               (replace-regexp-in-string "^\\[fn:\\([0-9]+\\)\\]" "" footnote)))
            (t
-            ""))
-      )))
+            "")))))
 
 (defun get-org-context-from-org-id-link (id)
   (let*
@@ -134,8 +134,7 @@
                      (insert context)
                      (org-element-map (org-element-parse-buffer) 'footnote-reference
                        (lambda (reference)
-                         (org-element-property :label reference)))))
-       )
+                         (org-element-property :label reference))))))
     (with-temp-buffer
       (insert-file-contents (aref (org-roam-node-from-id id) 1))
       (-map (lambda (label)
@@ -144,8 +143,7 @@
                                      (nth 1 (org-footnote-get-definition label))
                                      (nth 2 (org-footnote-get-definition label))))))
             label-list))
-    context)
-  )
+    context))
 
 (defun get-org-context-from-footnote (label)
   (let*
@@ -158,7 +156,7 @@
   (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
                       (lambda (link)
                         (when (string= (org-element-property :type link) "id")
-                          (list (concat "ID link: "
+                          (list (concat "↑ "
                                          (if (and (org-element-property :contents-begin link)
                                                   (org-element-property :contents-end link))
                                              (buffer-substring-no-properties
@@ -175,7 +173,7 @@
 (defun find-footnotes ()
   (let* ((footnote-list (org-element-map (org-element-parse-buffer) 'footnote-reference
                          (lambda (reference)
-                           (list (concat "Footnote: "
+                           (list (concat "↓ "
                                          (org-element-property :label reference))
                                  "Footnote"
                                  (org-element-property :begin reference)
@@ -227,8 +225,8 @@
     (if html-string
         (if (not (eq html-string org-roam-link-preview--previous-html))
             (progn
-              (popweb-start 'popweb-org-roam-link-preview (list t html-string))
-              (setq org-roam-link-preview--previous-html html-string)))
+              (setq org-roam-link-preview--previous-html html-string)
+              (popweb-start 'popweb-org-roam-link-preview (list t html-string))))
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world"))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
 
@@ -236,12 +234,9 @@
   (interactive)
   (ivy-read "Select a link to preview: " (append (find-org-id-links) (find-footnotes))
             :action (lambda (link) (cond ((string= "ID link" (elt link 1))
-                                          (popweb-org-roam-link-show (get-org-context-from-org-id-link (elt link 4))))
-                                         ((string= "Footnote" (elt link 1))
-                                          (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))
-            :unwind (progn
-                      (popweb-kill-process)
-                      (popweb--kill-python-process))))
+                                     (popweb-org-roam-link-show (get-org-context-from-org-id-link (elt link 4))))
+                                    ((string= "Footnote" (elt link 1))
+                                     (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))))
 
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
   (when (and popweb-org-roam-link-preview-window-visible-p (popweb-epc-live-p popweb-epc-process))
