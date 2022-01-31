@@ -11,6 +11,10 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ```elisp
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 
+;; Org-Roam ID link and footnote link previewer
+(add-to-list 'load-path "<path-to-popweb>/extension/org-roam")
+(require 'popweb-org-roam-link)
+
 ;; LaTeX preview functionality
 (add-to-list 'load-path "<path-to-popweb>/extension/latex")
 (require 'popweb-latex)
@@ -28,8 +32,14 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-dict-bing-input`: Translation given an input with Bing
 * `M-x popweb-dict-youdao-pointer`: Translation at point with Youdao
 * `M-x popweb-dict-youdao-input`: Translation given an input with Youdao
+* `M-x popweb-org-roam-link-show`: Preview Org-Roam ID link or footnote link at point.
+* `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a buffer  by ivy, then preview it.
 
 ## Screenshots
+### Org-Roam ID link and footnote link Preview
+<p align="center">
+  <img width="800" src="./img/org-roam-link-preview.gif">
+</p>
 
 ### LaTeX Preview
 <p align="center">
@@ -71,6 +81,12 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 (setq popweb-proxy-type "socks5")
 ```
 
+### Configure Org-Roam link popup window size
+```
+(setq popweb-org-roam-link-popup-window-width-scale 0.8)
+(setq popweb-org-roam-link-popup-window-height-scale 0.5)
+```
+Popup windown scale to Emacs's.
 
 ## Report bug
 Please use `emacs -q` and load a minimal setup with only popweb to verify that the bug is reproducible. If `emacs -q` works fine, probably something is wrong with your Emacs config.

@@ -6,8 +6,6 @@
 ;; Copyright (C) 2021, Andy Stewart, all rights reserved.
 ;; Created: 2022-01-25-23:00:00
 ;; Version: 0.1
-;; Last-Updated: 2021-11-21 07:32:38
-;;           By: Andy Stewart
 ;; URL: https://www.github.com/manateelazycat/popweb-dict
 ;; Keywords:
 ;; Compatibility: GNU Emacs 29.0.50
