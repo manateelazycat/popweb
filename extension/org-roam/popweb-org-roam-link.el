@@ -224,7 +224,12 @@
     (if html-string
         (if (not (eq html-string popweb-org-roam-link-preview--previous-html))
             (progn
-              (setq org-roam-link-preview--previous-html html-string)
+              (setq popweb-org-roam-link-preview--previous-html html-string)
+              (if popweb-org-roam-link-preview-window-visible-p
+                  (progn
+                    (setq popweb-org-roam-link-preview-window-visible-p nil)
+                    (ignore-errors
+                      (popweb-call-async "hide_web_window" "org_roam"))))
               (popweb-start 'popweb-org-roam-link-preview (list t html-string))))
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world"))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
