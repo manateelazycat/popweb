@@ -75,16 +75,16 @@
 (require 'ivy)
 
 ;;; Code:
-(defvar org-roam-link-preview--previous-html nil)
+(defvar popweb-org-roam-link-preview--previous-html nil)
 
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
-(defcustom org-roam-link-popup-window-width-scale 0.8
+(defcustom popweb-org-roam-link-popup-window-width-scale 0.8
   "The popup window's width scale of Emacs's"
   :type '(float))
 
-(defcustom org-roam-link-popup-window-height-scale 0.5
+(defcustom popweb-org-roam-link-popup-window-height-scale 0.5
   "The popup window's height scale of Emacs's"
   :type '(float))
 
@@ -201,7 +201,7 @@
          (frame-h (frame-outer-height))
          (show-window (nth 0 info))
          (html-string (nth 1 info))
-         (new-html (not (string= html-string org-roam-link-preview--previous-html))))
+         (new-html (not (string= html-string popweb-org-roam-link-preview--previous-html))))
     (popweb-call-async "call_module_method" popweb-org-roam-link-module-path
                        "pop_org_roam_link_window"
                        (list
@@ -209,8 +209,8 @@
                         popweb-org-roam-link-index-path
                         x y x-offset y-offset
                         frame-x frame-y frame-w frame-h
-                        org-roam-link-popup-window-width-scale
-                        org-roam-link-popup-window-height-scale
+                        popweb-org-roam-link-popup-window-width-scale
+                        popweb-org-roam-link-popup-window-height-scale
                         show-window new-html html-string))
     (popweb-org-roam-link-preview-window-can-hide)))
 
@@ -222,7 +222,7 @@
   (let* ((context-string (or context (get-org-context-at-point)))
          (html-string (get-html-from-org-context context-string)))
     (if html-string
-        (if (not (eq html-string org-roam-link-preview--previous-html))
+        (if (not (eq html-string popweb-org-roam-link-preview--previous-html))
             (progn
               (setq org-roam-link-preview--previous-html html-string)
               (popweb-start 'popweb-org-roam-link-preview (list t html-string))))
