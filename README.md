@@ -11,6 +11,10 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ```elisp
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 
+;; Org-Roam ID link and footnote link previewer
+(add-to-list 'load-path "<path-to-popweb>/extension/org-roam")
+(require 'popweb-org-roam-link)
+
 ;; LaTeX preview functionality
 (add-to-list 'load-path "<path-to-popweb>/extension/latex")
 (require 'popweb-latex)
@@ -79,8 +83,8 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 
 ### Configure Org-Roam link popup window size
 ```
-(setq org-roam-link-popup-window-width-scale 0.8)
-(setq org-roam-link-popup-window-height-scale 0.5)
+(setq popweb-org-roam-link-popup-window-width-scale 0.8)
+(setq popweb-org-roam-link-popup-window-height-scale 0.5)
 ```
 Popup windown scale to Emacs's.
 
