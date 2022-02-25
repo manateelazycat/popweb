@@ -36,11 +36,6 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a buffer  by ivy, then preview it.
 
 ## Screenshots
-### Org-Roam ID link and footnote link Preview
-<p align="center">
-  <img width="800" src="./img/org-roam-link-preview.gif">
-</p>
-
 ### LaTeX Preview
 <p align="center">
   <img width="800" src="./img/latex-preview.gif">
@@ -56,6 +51,10 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
   <img width="800" src="./img/dict-youdao.png">
 </p>
 
+### Org-Roam ID link and footnote link Preview
+<p align="center">
+  <img width="800" src="./img/org-roam-link-preview.gif">
+</p>
 
 ## Customization
 ### Configure popup position using `popweb-popup-pos`
