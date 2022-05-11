@@ -98,7 +98,7 @@
           (popweb-epc-server-start
            (lambda (mngr)
              (let ((mngr mngr))
-               (popweb-epc-define-method mngr 'eval-in-emacs 'eval-in-emacs-func)
+               (popweb-epc-define-method mngr 'eval-in-emacs 'popweb--eval-in-emacs-func)
                (popweb-epc-define-method mngr 'get-emacs-var 'popweb--get-emacs-var-func)
                (popweb-epc-define-method mngr 'get-emacs-vars 'popweb--get-emacs-vars-func)
                ))))
@@ -112,7 +112,7 @@
   (cl-loop repeat 600
            do (sleep-for 0.1)))
 
-(defun eval-in-emacs-func (&rest args)
+(defun popweb--eval-in-emacs-func (&rest args)
   (apply (read (car args))
          (mapcar
           (lambda (arg)
