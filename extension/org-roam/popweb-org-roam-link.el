@@ -80,6 +80,8 @@
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
+(defvar org-roam-node-ivy-read-result nil)
+
 (defcustom popweb-org-roam-link-popup-window-width-scale 0.8
   "The popup window's width scale of Emacs's"
   :type '(float))
@@ -234,6 +236,15 @@
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world"))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
 
+(defun org-roam-node--ivy-read-1 (&optional prompt initial-input filter-fn sort-fn require-match action caller)
+  (ivy-read prompt (org-roam-node-read--completions filter-fn sort-fn)
+            :require-match require-match
+            :initial-input initial-input
+            :action action
+            :history 'org-roam-node-history
+            :caller caller)
+  org-roam-node-ivy-read-result)
+
 (defun popweb-org-roam-link-preview-select ()
   (interactive)
   (ivy-read "Select a link to preview: " (append (find-org-id-links) (find-footnotes))
@@ -241,6 +252,12 @@
                                      (popweb-org-roam-link-show (get-org-context-from-org-id-link (elt link 4))))
                                     ((string= "Footnote" (elt link 1))
                                      (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))))
+
+(defun popweb-org-roam-node-preview-select ()
+  (interactive)
+  (org-roam-node--ivy-read-1 "Select a node to preview: " nil nil nil nil
+                             #'(lambda (x) (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id (cdr x)))))
+                             'popweb-org-roam-node-preview-select))
 
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
   (when (and popweb-org-roam-link-preview-window-visible-p (popweb-epc-live-p popweb-epc-process))
