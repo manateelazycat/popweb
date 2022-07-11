@@ -56,6 +56,11 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
   <img width="800" src="./img/org-roam-link-preview.gif">
 </p>
 
+### Org-Roam node preview
+<p align="center">
+  <img width="800" src="./img/org-roam-node-preview.gif">
+</p>
+
 ## Customization
 ### Configure popup position using `popweb-popup-pos`
   - `"point-bottom"`: bottom of the cursor, default
