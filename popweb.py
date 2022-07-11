@@ -21,14 +21,15 @@
 
 # NOTE
 # QtWebEngine will throw error "ImportError: QtWebEngineWidgets must be imported before a QCoreApplication instance is created"
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 
-from PyQt5 import QtCore
-from PyQt5.QtGui import QColor
-from PyQt5.QtCore import QUrl, Qt, QEventLoop
-from PyQt5.QtNetwork import QNetworkProxy, QNetworkProxyFactory
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
-from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout
+from PyQt6 import QtCore
+from PyQt6.QtGui import QColor
+from PyQt6.QtCore import QUrl, Qt, QEventLoop
+from PyQt6.QtNetwork import QNetworkProxy, QNetworkProxyFactory
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
+from PyQt6.QtWidgets import QWidget, QApplication, QVBoxLayout
 from epc.client import EPCClient
 from epc.server import ThreadingEPCServer
 import base64
@@ -179,9 +180,9 @@ class WebWindow(QWidget):
         global screen_size
 
         if platform.system() == "Windows":
-            self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool | Qt.WindowDoesNotAcceptFocus)
+            self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool | Qt.WindowType.WindowDoesNotAcceptFocus)
         else:
-            self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.ToolTip)
+            self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.ToolTip)
         self.setContentsMargins(0, 0, 0, 0)
 
         self.vbox = QVBoxLayout(self)
@@ -214,15 +215,15 @@ class WebWindow(QWidget):
 
         self.webview.installEventFilter(self)
 
-        self.settings = QWebEngineSettings.globalSettings()
+        self.settings = self.webview.settings()
         try:
-            self.settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, True)
-            self.settings.setAttribute(QWebEngineSettings.DnsPrefetchEnabled, True)
-            self.settings.setAttribute(QWebEngineSettings.FocusOnNavigationEnabled, True)
-            self.settings.setAttribute(QWebEngineSettings.PlaybackRequiresUserGesture, False)
-            self.settings.setAttribute(QWebEngineSettings.PluginsEnabled, True)
-            self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
-            self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, False)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.FullScreenSupportEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.DnsPrefetchEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.FocusOnNavigationEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.ShowScrollBars, False)
         except Exception:
             import traceback
             traceback.print_exc()
@@ -418,4 +419,4 @@ if __name__ == "__main__":
     popweb = POPWEB(sys.argv[1:])
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
