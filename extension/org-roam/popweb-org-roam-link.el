@@ -249,6 +249,14 @@
             :caller caller)
   org-roam-node-ivy-read-result)
 
+(defun popweb-org-roam-node-preview-select-action (x)
+  (cond ((and x (listp x))
+         (let ((node (cdr x)))
+           (setq org-roam-node-ivy-read-result node)
+           (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id node)) x)))
+        ((stringp x)
+         (setq org-roam-node-ivy-read-result (org-roam-node-create :title x)))))
+
 (defun popweb-org-roam-link-preview-select ()
   (interactive)
   (ivy-read "Select a link to preview: " (append (find-org-id-links) (find-footnotes))
@@ -257,10 +265,10 @@
                                     ((string= "Footnote" (elt link 1))
                                      (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))))
 
-(defun popweb-org-roam-node-preview-select ()
+(defun popweb-org-roam-node-preview-select (&optional initial-input filter-fn sort-fn require-match prompt)
   (interactive)
-  (org-roam-node--ivy-read-1 "Select a node to preview: " nil nil nil nil
-                             #'(lambda (x) (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id (cdr x)))))
+  (org-roam-node--ivy-read-1 (or prompt "Select a node to preview: ") initial-input filter-fn sort-fn require-match
+                             #'popweb-org-roam-node-preview-select-action
                              'popweb-org-roam-node-preview-select))
 
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
