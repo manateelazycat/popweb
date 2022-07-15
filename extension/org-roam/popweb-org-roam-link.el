@@ -100,7 +100,11 @@
            (label (org-element-property :label link)))
       (cond ((and (string= "id" (org-element-property :type link)) id)
              (let*
-              ((mkr (org-id-find id t))
+              (
+               (mkr (or (ignore-errors (org-id-find id t))
+                        (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
+                          (goto-char (aref (org-roam-node-from-id id) 8))
+                          (point-marker))))
                (context (org-element-context (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
                (label-list (with-temp-buffer
                              (insert context)
@@ -129,7 +133,10 @@
 (defun get-org-context-from-org-id-link (id)
   (let*
       ((plist)
-       (mkr (org-id-find id t))
+       (mkr (or (ignore-errors (org-id-find id t))
+                (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
+                  (goto-char (aref (org-roam-node-from-id id) 8))
+                  (point-marker))))
        (context (org-element-context (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
        (label-list (with-temp-buffer
                      (insert context)
