@@ -80,6 +80,8 @@
 (defvar popweb-org-roam-link-preview-window-visible-p nil
   "Non-nil if popweb-org-roam-link popup is at the foreground.")
 
+(defvar org-roam-node-ivy-read-result nil)
+
 (defcustom popweb-org-roam-link-popup-window-width-scale 0.8
   "The popup window's width scale of Emacs's"
   :type '(float))
@@ -98,7 +100,11 @@
            (label (org-element-property :label link)))
       (cond ((and (string= "id" (org-element-property :type link)) id)
              (let*
-              ((mkr (org-id-find id t))
+              (
+               (mkr (or (ignore-errors (org-id-find id t))
+                        (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
+                          (goto-char (aref (org-roam-node-from-id id) 8))
+                          (point-marker))))
                (context (org-element-context (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
                (label-list (with-temp-buffer
                              (insert context)
@@ -127,7 +133,10 @@
 (defun get-org-context-from-org-id-link (id)
   (let*
       ((plist)
-       (mkr (org-id-find id t))
+       (mkr (or (ignore-errors (org-id-find id t))
+                (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
+                  (goto-char (aref (org-roam-node-from-id id) 8))
+                  (point-marker))))
        (context (org-element-context (plist-get (org-transclusion-content-org-marker mkr plist) :src-content)))
        (label-list (with-temp-buffer
                      (insert context)
@@ -189,8 +198,7 @@
       nil)))
 
 (defun popweb-org-roam-link-preview (info)
-  (let* ((popweb-org-roam-link-index-path (concat "file:" (file-truename default-directory)))
-         (position (popweb-get-cursor-coordinate))
+  (let* ((position (popweb-get-cursor-coordinate))
          (x (car position))
          (y (cdr position))
          (x-offset (popweb-get-cursor-x-offset))
@@ -201,7 +209,12 @@
          (frame-h (frame-outer-height))
          (show-window (nth 0 info))
          (html-string (nth 1 info))
+         (ivy-action-x (nth 2 info))
          (new-html (not (string= html-string popweb-org-roam-link-preview--previous-html))))
+    (cond ((and ivy-action-x (listp ivy-action-x))
+           (setq popweb-org-roam-link-index-path (concat "file:" (file-name-directory (org-roam-node-file (cdr ivy-action-x))))))
+          (t
+           (setq popweb-org-roam-link-index-path (concat "file:" (file-truename default-directory)))))
     (popweb-call-async "call_module_method" popweb-org-roam-link-module-path
                        "pop_org_roam_link_window"
                        (list
@@ -217,7 +230,7 @@
 (defun popweb-org-roam-link-preview-window-can-hide ()
   (run-with-timer 1 nil (lambda () (setq popweb-org-roam-link-preview-window-visible-p t))))
 
-(defun popweb-org-roam-link-show (&optional context)
+(defun popweb-org-roam-link-show (&optional context ivy-action-x)
   (interactive)
   (let* ((context-string (or context (get-org-context-at-point)))
          (html-string (get-html-from-org-context context-string)))
@@ -230,9 +243,26 @@
                     (setq popweb-org-roam-link-preview-window-visible-p nil)
                     (ignore-errors
                       (popweb-call-async "hide_web_window" "org_roam"))))
-              (popweb-start 'popweb-org-roam-link-preview (list t html-string))))
-      (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world"))))
+              (popweb-start 'popweb-org-roam-link-preview (list t html-string ivy-action-x))))
+      (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" ivy-action-x))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
+
+(defun org-roam-node--ivy-read-1 (&optional prompt initial-input filter-fn sort-fn require-match action caller)
+  (ivy-read prompt (org-roam-node-read--completions filter-fn sort-fn)
+            :require-match require-match
+            :initial-input initial-input
+            :action action
+            :history 'org-roam-node-history
+            :caller caller)
+  org-roam-node-ivy-read-result)
+
+(defun popweb-org-roam-node-preview-select-action (x)
+  (cond ((and x (listp x))
+         (let ((node (cdr x)))
+           (setq org-roam-node-ivy-read-result node)
+           (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id node)) x)))
+        ((stringp x)
+         (setq org-roam-node-ivy-read-result (org-roam-node-create :title x)))))
 
 (defun popweb-org-roam-link-preview-select ()
   (interactive)
@@ -241,6 +271,12 @@
                                      (popweb-org-roam-link-show (get-org-context-from-org-id-link (elt link 4))))
                                     ((string= "Footnote" (elt link 1))
                                      (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))))
+
+(defun popweb-org-roam-node-preview-select (&optional initial-input filter-fn sort-fn require-match prompt)
+  (interactive)
+  (org-roam-node--ivy-read-1 (or prompt "Select a node to preview: ") initial-input filter-fn sort-fn require-match
+                             #'popweb-org-roam-node-preview-select-action
+                             'popweb-org-roam-node-preview-select))
 
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
   (when (and popweb-org-roam-link-preview-window-visible-p (popweb-epc-live-p popweb-epc-process))

@@ -33,8 +33,8 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-dict-youdao-pointer`: Translation at point with Youdao
 * `M-x popweb-dict-youdao-input`: Translation given an input with Youdao
 * `M-x popweb-org-roam-link-show`: Preview Org-Roam ID link or footnote link at point.
-* `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a buffer  by ivy, then preview it.
-
+* `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a Org-mode buffer by ivy, then preview the content of link.
+* `M-x popweb-org-roam-node-preview-select` Select one Org-Roam node by ivy, then hit `C-M-m ivy-call` to preview the content of node without exit ivy windown.
 ## Screenshots
 ### LaTeX Preview
 <p align="center">
@@ -54,6 +54,11 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ### Org-Roam ID link and footnote link Preview
 <p align="center">
   <img width="800" src="./img/org-roam-link-preview.gif">
+</p>
+
+### Org-Roam node preview
+<p align="center">
+  <img width="800" src="./img/org-roam-node-preview.gif">
 </p>
 
 ## Customization
