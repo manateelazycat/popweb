@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QUrl
+from qtpy.QtCore import QUrl
 
 def pop_url_window(popweb, module_name, x, y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, width_scale, height_scale, url):
     web_window = popweb.get_web_window(module_name)

@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QUrl, QTimer
+from qtpy.QtCore import QUrl, QTimer
 import os
 
 def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, show_window, new_latex):

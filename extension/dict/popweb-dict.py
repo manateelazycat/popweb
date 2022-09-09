@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QUrl
+from qtpy.QtCore import QUrl
 
 def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, width_scale, height_scale, url, loading_js_code):
     web_window = popweb.get_web_window(module_name)

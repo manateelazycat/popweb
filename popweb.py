@@ -21,15 +21,15 @@
 
 # NOTE
 # QtWebEngine will throw error "ImportError: QtWebEngineWidgets must be imported before a QCoreApplication instance is created"
-from PyQt6.QtWebEngineWidgets import QWebEngineView
+from qtpy.QtWebEngineWidgets import QWebEngineView
 
-from PyQt6 import QtCore
-from PyQt6.QtGui import QColor
-from PyQt6.QtCore import QUrl, Qt, QEventLoop
-from PyQt6.QtNetwork import QNetworkProxy, QNetworkProxyFactory
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
-from PyQt6.QtWidgets import QWidget, QApplication, QVBoxLayout
+from qtpy import QtCore
+from qtpy.QtGui import QColor
+from qtpy.QtCore import QUrl, Qt, QEventLoop, Signal
+from qtpy.QtNetwork import QNetworkProxy, QNetworkProxyFactory
+from qtpy.QtWebEngineWidgets import QWebEngineView
+from qtpy.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
+from qtpy.QtWidgets import QWidget, QApplication, QVBoxLayout
 from epc.client import EPCClient
 from epc.server import ThreadingEPCServer
 import base64
@@ -43,7 +43,7 @@ import threading
 
 class PostGui(QtCore.QObject):
 
-    through_thread = QtCore.pyqtSignal(object, object)
+    through_thread = Signal(object, object)
 
     def __init__(self, inclass=True):
         super(PostGui, self).__init__()

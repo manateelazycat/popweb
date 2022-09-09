@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from PyQt6.QtCore import QUrl, QTimer
+from qtpy.QtCore import QUrl, QTimer
 import os
 
 

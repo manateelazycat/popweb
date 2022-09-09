@@ -4,7 +4,8 @@ I always wanted a fast and responsive pop-up window to display multimedia conten
 I consider `popweb` to be a sister project, and a lightweight version of EAF that particularly focuses on multimedia popup functionality, some portion of code is shared between the two projects.
 
 ## Installation
-1. Install PyQt6: ```pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6```
+1. Install qtpy ```pip install qtpy```
+1. Install PyQt6 (or PySide6): ```pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6```
 2. Install [python-epc](https://github.com/tkf/python-epc): ```pip install epc```
 3. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
 4. In your `~/.emacs`, add the following lines:

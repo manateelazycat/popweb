@@ -247,6 +247,151 @@ Turn on this option will improve start speed."
                      popweb-internal-process-prog popweb-internal-process-args)))
       (set-process-query-on-exit-flag popweb-internal-process nil))))
 
+(defun popweb-start-process ()
+  "Start POPWEB process if it isn't started."
+  (unless (popweb-epc-live-p popweb-epc-process)
+    ;; start epc server and set `popweb-server-port'
+    (popweb--start-epc-server)
+    (let* ((popweb-args (append
+                         (list popweb-python-file)
+                         (list (number-to-string popweb-server-port))
+                         )))
+
+      ;; Folow system DPI.
+      (popweb--follow-system-dpi)
+
+      ;; Set process arguments.
+      (if popweb-enable-debug
+          (progn
+            (setq popweb-internal-process-prog "gdb")
+            (setq popweb-internal-process-args (append (list "-batch" "-ex" "run" "-ex" "bt" "--args" popweb-python-command) popweb-args)))
+        (setq popweb-internal-process-prog popweb-python-command)
+        (setq popweb-internal-process-args popweb-args))
+
+      ;; Start python process.
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+        (setq popweb-internal-process
+              (apply 'start-process
+                     popweb-name popweb-name
+                     popweb-internal-process-prog popweb-internal-process-args)))
+      (set-process-query-on-exit-flag popweb-internal-process nil))))
+
+(defun popweb-start-process ()
+  "Start POPWEB process if it isn't started."
+  (unless (popweb-epc-live-p popweb-epc-process)
+    ;; start epc server and set `popweb-server-port'
+    (popweb--start-epc-server)
+    (let* ((popweb-args (append
+                         (list popweb-python-file)
+                         (list (number-to-string popweb-server-port))
+                         )))
+
+      ;; Folow system DPI.
+      (popweb--follow-system-dpi)
+
+      ;; Set process arguments.
+      (if popweb-enable-debug
+          (progn
+            (setq popweb-internal-process-prog "gdb")
+            (setq popweb-internal-process-args (append (list "-batch" "-ex" "run" "-ex" "bt" "--args" popweb-python-command) popweb-args)))
+        (setq popweb-internal-process-prog popweb-python-command)
+        (setq popweb-internal-process-args popweb-args))
+
+      ;; Start python process.
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+        (setq popweb-internal-process
+              (apply 'start-process
+                     popweb-name popweb-name
+                     popweb-internal-process-prog popweb-internal-process-args)))
+      (set-process-query-on-exit-flag popweb-internal-process nil))))
+
+(defun popweb-start-process ()
+  "Start POPWEB process if it isn't started."
+  (unless (popweb-epc-live-p popweb-epc-process)
+    ;; start epc server and set `popweb-server-port'
+    (popweb--start-epc-server)
+    (let* ((popweb-args (append
+                         (list popweb-python-file)
+                         (list (number-to-string popweb-server-port))
+                         )))
+
+      ;; Folow system DPI.
+      (popweb--follow-system-dpi)
+
+      ;; Set process arguments.
+      (if popweb-enable-debug
+          (progn
+            (setq popweb-internal-process-prog "gdb")
+            (setq popweb-internal-process-args (append (list "-batch" "-ex" "run" "-ex" "bt" "--args" popweb-python-command) popweb-args)))
+        (setq popweb-internal-process-prog popweb-python-command)
+        (setq popweb-internal-process-args popweb-args))
+
+      ;; Start python process.
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+        (setq popweb-internal-process
+              (apply 'start-process
+                     popweb-name popweb-name
+                     popweb-internal-process-prog popweb-internal-process-args)))
+      (set-process-query-on-exit-flag popweb-internal-process nil))))
+
+(defun popweb-start-process ()
+  "Start POPWEB process if it isn't started."
+  (unless (popweb-epc-live-p popweb-epc-process)
+    ;; start epc server and set `popweb-server-port'
+    (popweb--start-epc-server)
+    (let* ((popweb-args (append
+                         (list popweb-python-file)
+                         (list (number-to-string popweb-server-port))
+                         )))
+
+      ;; Folow system DPI.
+      (popweb--follow-system-dpi)
+
+      ;; Set process arguments.
+      (if popweb-enable-debug
+          (progn
+            (setq popweb-internal-process-prog "gdb")
+            (setq popweb-internal-process-args (append (list "-batch" "-ex" "run" "-ex" "bt" "--args" popweb-python-command) popweb-args)))
+        (setq popweb-internal-process-prog popweb-python-command)
+        (setq popweb-internal-process-args popweb-args))
+
+      ;; Start python process.
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+        (setq popweb-internal-process
+              (apply 'start-process
+                     popweb-name popweb-name
+                     popweb-internal-process-prog popweb-internal-process-args)))
+      (set-process-query-on-exit-flag popweb-internal-process nil))))
+
+(defun popweb-start-process ()
+  "Start POPWEB process if it isn't started."
+  (unless (popweb-epc-live-p popweb-epc-process)
+    ;; start epc server and set `popweb-server-port'
+    (popweb--start-epc-server)
+    (let* ((popweb-args (append
+                         (list popweb-python-file)
+                         (list (number-to-string popweb-server-port))
+                         )))
+
+      ;; Folow system DPI.
+      (popweb--follow-system-dpi)
+
+      ;; Set process arguments.
+      (if popweb-enable-debug
+          (progn
+            (setq popweb-internal-process-prog "gdb")
+            (setq popweb-internal-process-args (append (list "-batch" "-ex" "run" "-ex" "bt" "--args" popweb-python-command) popweb-args)))
+        (setq popweb-internal-process-prog popweb-python-command)
+        (setq popweb-internal-process-args popweb-args))
+
+      ;; Start python process.
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+        (setq popweb-internal-process
+              (apply 'start-process
+                     popweb-name popweb-name
+                     popweb-internal-process-prog popweb-internal-process-args)))
+      (set-process-query-on-exit-flag popweb-internal-process nil))))
+
 (defun popweb--called-from-wsl-on-windows-p ()
   "Check whether popweb is called by Emacs on WSL and is running on Windows."
   (and (eq system-type 'gnu/linux)
