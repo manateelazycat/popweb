@@ -299,7 +299,7 @@ channel : Event channels for incoming messages."
 return popweb-epc-connection object."
   (popweb-epc-log ">> Connection start: %s:%s" host port)
   (let* ((connection-id (popweb-epc-uid))
-         (connection-name (format "epc con %s" connection-id))
+         (connection-name (format "popweb-epc con %s" connection-id))
          (connection-buf (popweb-epc-make-procbuf (format "*%s*" connection-name)))
          (connection-process
           (open-network-stream connection-name connection-buf host port))
@@ -695,7 +695,7 @@ This variable is used for the management purpose.")
   "[internal] Initialize the process and return popweb-epc-manager object."
   (popweb-epc-log "POPWEB-EPC-SERVER- >> Connection accept: %S" process)
   (let* ((connection-id (popweb-epc-uid))
-         (connection-name (format "epc con %s" connection-id))
+         (connection-name (format "popweb-epc con %s" connection-id))
          (channel (list connection-name nil))
          (connection (make-popweb-epc-connection
                       :name connection-name
@@ -747,7 +747,7 @@ This variable is used for the management purpose.")
   "Start TCP Server and return the main process object."
   (let*
       ((connect-function connect-function)
-       (name (format "EPC Server %s" (popweb-epc-uid)))
+       (name (format "POPWEB EPC Server %s" (popweb-epc-uid)))
        (buf (popweb-epc-make-procbuf (format " *%s*" name)))
        (main-process
         (make-network-process
