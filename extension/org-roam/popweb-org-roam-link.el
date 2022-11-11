@@ -199,8 +199,9 @@
 
 (defun popweb-org-roam-link-preview (info)
   (let* ((position (popweb-get-cursor-coordinate))
+         (window-header-height (- (nth 1 (window-inside-pixel-edges)) (nth 1 (window-absolute-pixel-edges))))
          (x (car position))
-         (y (cdr position))
+         (y (- (cdr position) window-header-height))
          (x-offset (popweb-get-cursor-x-offset))
          (y-offset (popweb-get-cursor-y-offset))
          (frame-x (car (frame-position)))
