@@ -13,6 +13,19 @@
   "The popup window's height scale of Emacs's"
   :type '(float))
 
+(defcustom popweb-url-web-window-width-absolute 480
+  "The popup windows's absolute width in pixels"
+  :type '(int))
+
+(defcustom popweb-url-web-window-height-absolute 270
+  "The popup windows's absolute height in pixels"
+  :type '(int))
+
+(defcustom popweb-url-web-window-size-use-absolute t
+  "Wether to use absolute or relative size for the popup window"
+  :type '(bool))
+
+
 (defun popweb-url-local-file-url-completion (current-line)
   "If url is local file, complete it's absolute path"
   (let ((match-result (match-string 0 current-line))
@@ -64,6 +77,9 @@
                         frame-x frame-y frame-w frame-h
 						popweb-url-web-window-width-scale
 						popweb-url-web-window-height-scale
+						popweb-url-web-window-width-absolute
+						popweb-url-web-window-height-absolute
+						popweb-url-web-window-size-use-absolute
                         url))
     (popweb-url-web-window-can-hide)))
 
