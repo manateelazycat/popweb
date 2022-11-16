@@ -92,6 +92,14 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 ```
 Popup windown scale to Emacs's.
 
+## Configure Url-Preivew popup window size
+```
+(setq popweb-url-web-window-width-scale 0.8)
+(setq popweb-url-web-window-height-scale 0.45)
+```
+Popup windown scale to Emacs's.
+
+
 ## Report bug
 Please use `emacs -q` and load a minimal setup with only popweb to verify that the bug is reproducible. If `emacs -q` works fine, probably something is wrong with your Emacs config.
 
