@@ -47,8 +47,8 @@
          (frame-y (cdr (frame-position)))
          (frame-w (frame-outer-width))
          (frame-h (frame-outer-height))
-         (width-scale 0.35)
-         (height-scale 0.5)
+         (width-scale 0.8)
+         (height-scale 0.45)
          (url (nth 0 info))
          )
     (popweb-call-async "call_module_method" popweb-url-module-path
