@@ -5,6 +5,13 @@
 
 (defvar popweb-url-web-window-visible-p nil)
 
+(defcustom popweb-url-web-window-width-scale 0.8
+  "The popup window's width scale of Emacs's"
+  :type '(float))
+
+(defcustom popweb-url-web-window-height-scale 0.45
+  "The popup window's height scale of Emacs's"
+  :type '(float))
 
 (defun popweb-url-local-file-url-completion (current-line)
   "If url is local file, complete it's absolute path"
@@ -47,8 +54,6 @@
          (frame-y (cdr (frame-position)))
          (frame-w (frame-outer-width))
          (frame-h (frame-outer-height))
-         (width-scale 0.35)
-         (height-scale 0.5)
          (url (nth 0 info))
          )
     (popweb-call-async "call_module_method" popweb-url-module-path
@@ -57,7 +62,8 @@
                         "url-preview"
                         x y x-offset y-offset
                         frame-x frame-y frame-w frame-h
-                        width-scale height-scale
+						popweb-url-web-window-width-scale
+						popweb-url-web-window-height-scale
                         url))
     (popweb-url-web-window-can-hide)))
 
