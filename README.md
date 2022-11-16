@@ -90,14 +90,25 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 (setq popweb-org-roam-link-popup-window-width-scale 0.8)
 (setq popweb-org-roam-link-popup-window-height-scale 0.5)
 ```
-Popup windown scale to Emacs's.
+Popup window scales to Emacs's.
 
 ## Configure Url-Preivew popup window size
+You can choose either scaled to emacs or in pixes by customizing
+```
+(setq popweb-url-web-window-size-use-absolute t)
+```
+### Scaled to emacs
 ```
 (setq popweb-url-web-window-width-scale 0.8)
 (setq popweb-url-web-window-height-scale 0.45)
 ```
-Popup windown scale to Emacs's.
+Popup window scales to Emacs's.
+### Absolute
+```
+(sqtq popweb-url-web-window-width-absolute 480)
+(sqtq popweb-url-web-window-height-absolute 270)
+```
+Popup window's size in pixels
 
 
 ## Report bug
