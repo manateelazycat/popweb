@@ -193,23 +193,50 @@ Turn on this option will improve start speed."
   "Call Python EPC function METHOD and ARGS synchronously."
   (popweb-epc-call-sync popweb-epc-process (read method) args))
 
-(defun popweb--follow-system-dpi ()
-  (if (and (getenv "WAYLAND_DISPLAY") (not (string= (getenv "WAYLAND_DISPLAY") "")))
-      (progn
-        ;; We need manually set scale factor when at Gnome/Wayland environment.
-        ;; It is important to set QT_AUTO_SCREEN_SCALE_FACTOR=0
-        ;; otherwise Qt which explicitly force high DPI enabling get scaled TWICE.
-        (setenv "QT_AUTO_SCREEN_SCALE_FACTOR" "0")
-        ;; Set POPWEB application scale factor.
-        (setenv "QT_SCALE_FACTOR" "1")
-        ;; Force xwayland to ensure SWay works.
-        (setenv "QT_QPA_PLATFORM" "xcb"))
-    (setq process-environment
-          (seq-filter
-           (lambda (var)
-             (and (not (string-match-p "QT_SCALE_FACTOR" var))
-                  (not (string-match-p "QT_SCREEN_SCALE_FACTOR" var))))
-           process-environment))))
+(defun popweb-emacs-running-in-wayland-native ()
+  (eq window-system 'pgtk))
+
+(defun popweb--build-process-environment ()
+  (let ((environments (seq-filter
+                       (lambda (var)
+                         (and (not (string-match-p "QT_SCALE_FACTOR" var))
+                              (not (string-match-p "QT_SCREEN_SCALE_FACTOR" var))))
+                       process-environment)))
+    (when popweb-enable-debug
+      (add-to-list 'environments "QT_DEBUG_PLUGINS=1" t))
+
+    (unless (eq system-type 'darwin)
+      (add-to-list 'environments
+                   (cond
+                    ((popweb-emacs-running-in-wayland-native)
+                     ;; Wayland native need to set QT_AUTO_SCREEN_SCALE_FACTOR=1
+                     ;; otherwise Qt window only have half of screen.
+                     "QT_AUTO_SCREEN_SCALE_FACTOR=1")
+                    (t
+                     ;; XWayland need to set QT_AUTO_SCREEN_SCALE_FACTOR=0
+                     ;; otherwise Qt which explicitly force high DPI enabling get scaled TWICE.
+                     "QT_AUTO_SCREEN_SCALE_FACTOR=0"))
+                   t)
+
+      ;; Make sure application scale support 4k screen.
+      (add-to-list 'environments "QT_SCALE_FACTOR=1" t)
+
+      ;; In wayland, we use
+      (add-to-list 'environments
+                   (cond
+                    ((popweb-emacs-running-in-wayland-native)
+                     (format "QT_FONT_DPI=%s" (if (= (frame-scale-factor) 2) "192" "96")))
+                    (t
+                     "QT_FONT_DPI=96"))
+                   t)
+
+      ;; Use XCB for input event transfer.
+      ;; Only enable this option on Linux platform.
+      (when (and (eq system-type 'gnu/linux)
+                 (not (popweb-emacs-running-in-wayland-native)))
+        (add-to-list 'environments "QT_QPA_PLATFORM=xcb" t))
+
+      environments)))
 
 (defun popweb-restart-process ()
   "Stop and restart POPWEB process."
@@ -226,10 +253,11 @@ Turn on this option will improve start speed."
     (let* ((popweb-args (append
                          (list popweb-python-file)
                          (list (number-to-string popweb-server-port))
-                         )))
+                         ))
+           environments)
 
       ;; Folow system DPI.
-      (popweb--follow-system-dpi)
+      (setq environments (popweb--build-process-environment))
 
       ;; Set process arguments.
       (if popweb-enable-debug
@@ -240,7 +268,8 @@ Turn on this option will improve start speed."
         (setq popweb-internal-process-args popweb-args))
 
       ;; Start python process.
-      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p))))
+      (let ((process-connection-type (not (popweb--called-from-wsl-on-windows-p)))
+            (process-environment environments))
         (setq popweb-internal-process
               (apply 'start-process
                      popweb-name popweb-name
