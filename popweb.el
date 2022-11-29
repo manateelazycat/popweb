@@ -218,17 +218,10 @@ Turn on this option will improve start speed."
                      "QT_AUTO_SCREEN_SCALE_FACTOR=0"))
                    t)
 
-      ;; Make sure application scale support 4k screen.
-      (add-to-list 'environments "QT_SCALE_FACTOR=1" t)
+      (add-to-list 'environments "QT_FONT_DPI=96" t)
 
-      ;; In wayland, we use
-      (add-to-list 'environments
-                   (cond
-                    ((popweb-emacs-running-in-wayland-native)
-                     (format "QT_FONT_DPI=%s" (if (= (frame-scale-factor) 2) "192" "96")))
-                    (t
-                     "QT_FONT_DPI=96"))
-                   t)
+      ;; Make sure EAF application scale support 4k screen.
+      (add-to-list 'environments "QT_SCALE_FACTOR=1" t)
 
       ;; Use XCB for input event transfer.
       ;; Only enable this option on Linux platform.
