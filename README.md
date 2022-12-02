@@ -32,6 +32,8 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-dict-bing-input`: Translation given an input with Bing
 * `M-x popweb-dict-youdao-pointer`: Translation at point with Youdao
 * `M-x popweb-dict-youdao-input`: Translation given an input with Youdao
+* `M-x popweb-dict-youglish-pointer`: Translation at point with youglish.com
+* `M-x popweb-dict-youglish-input`: Translation given an input with youglish.com
 * `M-x popweb-org-roam-link-show`: Preview Org-Roam ID link or footnote link at point.
 * `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a Org-mode buffer by ivy, then preview the content of link.
 * `M-x popweb-org-roam-node-preview-select` Select one Org-Roam node by ivy, then hit `C-M-m ivy-call` to preview the content of node without exit ivy windown.
@@ -49,6 +51,11 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ### Youdao Translation
 <p align="center">
   <img width="800" src="./img/dict-youdao.png">
+</p>
+
+### Youglish Translation
+<p align="center">
+  <img width="800" src="./img/dict-youglish.png">
 </p>
 
 ### Org-Roam ID link and footnote link Preview
