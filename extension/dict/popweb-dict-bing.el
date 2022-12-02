@@ -100,7 +100,14 @@
          (height-scale 0.5)
          (word (nth 0 info))
          (url (format "http://www.bing.com/dict/search?mkt=zh-cn&q=%s" word))
-         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementsByClassName('lf_area')[0].style.visibility = 'visible'; document.getElementsByTagName('header')[0].style.display = 'none'; document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"))
+         (js-code
+          (concat
+           "window.scrollTo(0, 0); "
+           "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+           "document.getElementsByClassName('lf_area')[0].style.visibility = 'visible' ; "
+           "document.getElementsByTagName('header')[0].style.display = 'none'; "
+           "document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"
+           )))
     (popweb-dict-say-word word)
     (popweb-call-async "call_module_method" popweb-dict-module-path
                        "pop_translate_window"

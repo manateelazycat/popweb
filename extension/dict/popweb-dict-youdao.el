@@ -100,7 +100,19 @@
          (height-scale 0.5)
          (word (nth 0 info))
          (url (format "https://www.youdao.com/w/eng/%s" word))
-         (js-code "window.scrollTo(0, 0); document.getElementsByTagName('html')[0].style.visibility = 'hidden'; document.getElementById('results').style.visibility = 'visible'; document.getElementById('scontainer').style.margin = '0'; document.getElementById('scontainer').style.padding = '0'; document.getElementById('result_navigator').style.display = 'none'; document.getElementById('container').style.padding = '0'; document.getElementById('container').style.paddingLeft = '10px'; document.getElementById('container').style.margin = '0'; document.getElementById('topImgAd').style.display = 'none'; "))
+         (js-code
+          (concat
+           "window.scrollTo(0, 0); "
+           "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+           "document.getElementById('results').style.visibility = 'visible'; "
+           "document.getElementById('scontainer').style.margin = '0'; "
+           "document.getElementById('scontainer').style.padding = '0'; "
+           "document.getElementById('result_navigator').style.display = 'none'; "
+           "document.getElementById('container').style.padding = '0'; "
+           "document.getElementById('container').style.paddingLeft = '10px'; "
+           "document.getElementById('container').style.margin = '0'; "
+           "document.getElementById('topImgAd').style.display = 'none'; "
+           )))
     (popweb-dict-say-word word)
     (popweb-call-async "call_module_method" popweb-dict-module-path
                        "pop_translate_window"
