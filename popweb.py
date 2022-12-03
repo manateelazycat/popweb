@@ -301,6 +301,9 @@ class POPWEB(object):
         self.proxy = (proxy_type, proxy_host, proxy_port)
         self.is_proxy = False
 
+        if proxy_type != "" and proxy_host != "" and proxy_port != "":
+            self.enable_proxy()
+
     def enable_proxy(self):
         global proxy_string
 
@@ -308,9 +311,9 @@ class POPWEB(object):
 
         proxy = QNetworkProxy()
         if self.proxy[0] == "socks5":
-            proxy.setType(QNetworkProxy.Socks5Proxy)
+            proxy.setType(QNetworkProxy.ProxyType.Socks5Proxy)
         elif self.proxy[0] == "http":
-            proxy.setType(QNetworkProxy.HttpProxy)
+            proxy.setType(QNetworkProxy.ProxyType.HttpProxy)
         proxy.setHostName(self.proxy[1])
         proxy.setPort(int(self.proxy[2]))
 
