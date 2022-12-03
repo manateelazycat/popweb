@@ -125,12 +125,14 @@
 ;;;###autoload
 (defun popweb-dict-youglish-input (&optional word)
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-youglish-translate (list (or word (popweb-dict-prompt-input "Youglish dict: "))))
   (add-hook 'post-command-hook #'popweb-dict-youglish-web-window-hide-after-move))
 
 ;;;###autoload
 (defun popweb-dict-youglish-pointer ()
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-youglish-translate (list (popweb-dict-region-or-word)))
   (add-hook 'post-command-hook #'popweb-dict-youglish-web-window-hide-after-move))
 
