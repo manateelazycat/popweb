@@ -122,12 +122,14 @@
 ;;;###autoload
 (defun popweb-dict-bing-input (&optional word)
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-bing-translate (list (or word (popweb-dict-prompt-input "Bing dict: "))))
   (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
 
 ;;;###autoload
 (defun popweb-dict-bing-pointer ()
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-bing-translate (list (popweb-dict-region-or-word)))
   (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
 

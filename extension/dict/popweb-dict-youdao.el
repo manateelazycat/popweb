@@ -127,12 +127,14 @@
 ;;;###autoload
 (defun popweb-dict-youdao-input (&optional word)
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-dict-prompt-input "Youdao dict: "))))
   (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
 
 ;;;###autoload
 (defun popweb-dict-youdao-pointer ()
   (interactive)
+  (popweb-dict-youdao-web-window-hide-after-move)
   (popweb-start 'popweb-dict-youdao-translate (list (popweb-dict-region-or-word)))
   (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
 
