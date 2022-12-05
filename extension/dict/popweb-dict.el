@@ -150,7 +150,7 @@ Otherwise return word around point."
                 (height-scale 0.5)
                 (word (nth 0 info))
                 (url (format ,url word))
-                (js-code ,js-code))
+                (js-code (format "try { %s } catch (err) { console.log(err.message) }" ,js-code)))
            (popweb-dict-say-word word)
            (popweb-call-async "call_module_method" popweb-dict-module-path
                               "pop_translate_window"
