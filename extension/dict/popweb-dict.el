@@ -175,6 +175,82 @@ Otherwise return word around point."
          (add-hook 'post-command-hook #',func-hide-after-move))
        )))
 
+(popweb-dict-create "bing"
+                    "http://www.bing.com/dict/search?mkt=zh-cn&q=%s"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+                     "document.getElementsByClassName('lf_area')[0].style.visibility = 'visible' ; "
+                     "document.getElementsByTagName('header')[0].style.display = 'none'; "
+                     "document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"
+                     ))
+
+(popweb-dict-create "youdao"
+                    "https://www.youdao.com/w/eng/%s"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+                     "document.getElementById('results').style.visibility = 'visible'; "
+                     "document.getElementById('scontainer').style.margin = '0'; "
+                     "document.getElementById('scontainer').style.padding = '0'; "
+                     "document.getElementById('result_navigator').style.display = 'none'; "
+                     "document.getElementById('container').style.padding = '0'; "
+                     "document.getElementById('container').style.paddingLeft = '10px'; "
+                     "document.getElementById('container').style.margin = '0'; "
+                     "document.getElementById('topImgAd').style.display = 'none'; "
+                     ))
+
+(popweb-dict-create "youglish"
+                    "https://youglish.com/pronounce/%s/english?"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('body')[0].style.margin = '0'; "
+                     "document.getElementsByTagName('header')[0].style.display = 'none'; "
+                     "document.getElementsByTagName('footer')[0].style.display = 'none'; "
+                     "document.getElementsByClassName('search')[0].style.display = 'none'; "
+                     "document.querySelectorAll('div .g_pr_ad_network')[1].style.display = 'none' ; "
+                     "Array.from(document.querySelectorAll('ins')).forEach(e => { e.style.display = 'none' }); "
+                     "Array.from(document.querySelectorAll('iframe:not(#player)')).forEach(e => { e.style.display = 'none' }); "
+                     ))
+
+(popweb-dict-create "dictcn"
+                    "http://dict.cn/%s"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+                     "document.getElementsByClassName('main')[0].style.visibility = 'visible' ; "
+                     "document.getElementsByClassName('main')[0].style.margin = '0' ; "
+                     "document.getElementById('dshared').style.display = 'none';"
+                     "document.getElementById('aswift_0_host').style.display = 'none';"
+                     "document.getElementById('aswift_1_host').style.display = 'none';"
+                     "document.getElementById('aswift_2_host').style.display = 'none';"
+                     "document.getElementById('aswift_3_host').style.display = 'none';"
+                     "document.getElementById('content').style.padding = '0';"
+                     "document.getElementById('content').style.margin = '0';"
+                     "document.getElementById('footer').style.display = 'none';"
+                     "document.getElementsByClassName('copyright')[0].style.display = 'none';"
+                     "Array.from(document.querySelectorAll('iframe')).forEach(e => { e.style.display = 'none' })"
+                     ))
+
+(popweb-dict-create "collins"
+                    "https://www.collinsdictionary.com/zh/dictionary/english-chinese/%s"
+                    (concat
+                     "window.scrollTo(0, 0);"
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden';"
+                     "document.getElementsByClassName('res_cell_center')[0].style.visibility = 'visible' ;"
+                     "document.getElementsByClassName('tabsNavigation')[0].style.display = 'none' ;"
+                     "document.getElementsByClassName('carousel')[0].style.display = 'none' ;"
+                     "document.getElementsByClassName('btmslot_a-container')[0].style.display = 'none' ;"
+                     "document.getElementsByClassName('carousel-title')[1].style.display = 'none' ;"
+                     "document.getElementsByClassName('cB-hook')[0].style.display = 'none' ;"
+                     "document.getElementsByClassName('mpuslot_b-container')[0].style.display = 'none' ;"
+                     "document.getElementById('onetrust-consent-sdk').style.display = 'none' ;"
+                     "document.getElementsByClassName('res_cell_left')[0].style.width = '0' ;"
+                     "document.getElementsByClassName('topslot_container')[0].style.height = '0' ;"
+                     "document.querySelector('main').style.padding = '0' ;"
+                     "document.querySelector('footer').style.display = 'none' ;"
+                     ))
+
 (provide 'popweb-dict)
 
 ;;; popweb-dict.el ends here
