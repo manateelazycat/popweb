@@ -85,6 +85,7 @@
 ;;; Code:
 
 (setq popweb-dict-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
+(setq popweb-dict-audio-process nil)
 
 (defun popweb-dict-say-word (word)
   (if (featurep 'cocoa)
@@ -94,11 +95,12 @@
                       (executable-find "mplayer")
                       (executable-find "mpg123"))))
       (if player
-          (start-process
-           player
-           nil
-           player
-           (format "http://dict.youdao.com/dictvoice?type=2&audio=%s" (url-hexify-string word)))
+          (setq popweb-dict-audio-process
+                (start-process
+                 player
+                 nil
+                 player
+                 (format "http://dict.youdao.com/dictvoice?type=2&audio=%s" (url-hexify-string word))))
         (message "mpv, mplayer or mpg123 is needed to play word voice")))))
 
 (defun popweb-dict-prompt-input (prompt)
@@ -130,6 +132,7 @@ Otherwise return word around point."
          (when (and ,var-visible-p (popweb-epc-live-p popweb-epc-process))
            (popweb-call-async "hide_web_window" (format "dict_%s" ,name))
            (setq ,var-visible-p nil)
+           (when popweb-dict-audio-process (delete-process popweb-dict-audio-process))
            (remove-hook 'post-command-hook #',func-hide-after-move)))
 
        (defun ,func-can-hide ()
