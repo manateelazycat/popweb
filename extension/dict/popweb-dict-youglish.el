@@ -85,67 +85,18 @@
 
 ;;; Code:
 
-(defun popweb-dict-youglish-translate (info)
-  (let* ((position (popweb-get-cursor-coordinate))
-         (window-header-height (- (nth 1 (window-inside-pixel-edges)) (nth 1 (window-absolute-pixel-edges))))
-         (x (car position))
-         (y (- (cdr position) window-header-height))
-         (x-offset (popweb-get-cursor-x-offset))
-         (y-offset (popweb-get-cursor-y-offset))
-         (frame-x (car (frame-position)))
-         (frame-y (cdr (frame-position)))
-         (frame-w (frame-outer-width))
-         (frame-h (frame-outer-height))
-         (width-scale 0.35)
-         (height-scale 0.5)
-         (word (nth 0 info))
-         (url (format "https://youglish.com/pronounce/%s/english?" word))
-         (js-code
-          (concat
-           "window.scrollTo(0, 0); "
-           "document.getElementsByTagName('body')[0].style.margin = '0'; "
-           "document.getElementsByTagName('header')[0].style.display = 'none'; "
-           "document.getElementsByTagName('footer')[0].style.display = 'none'; "
-           "document.getElementsByClassName('search')[0].style.display = 'none'; "
-           "document.querySelectorAll('div .g_pr_ad_network')[1].style.display = 'none' ; "
-           "Array.from(document.querySelectorAll('ins')).forEach(e => { e.style.display = 'none' }); "
-           "Array.from(document.querySelectorAll('iframe:not(#player)')).forEach(e => { e.style.display = 'none' }); "
-           )))
-    (popweb-dict-say-word word)
-    (popweb-call-async "call_module_method" popweb-dict-module-path
-                       "pop_translate_window"
-                       (list
-                        "dict_youglish"
-                        x y x-offset y-offset
-                        frame-x frame-y frame-w frame-h
-                        width-scale height-scale
-                        url js-code))
-    (popweb-dict-youglish-web-window-can-hide)))
-
-;;;###autoload
-(defun popweb-dict-youglish-input (&optional word)
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-youglish-translate (list (or word (popweb-dict-prompt-input "Youglish dict: "))))
-  (add-hook 'post-command-hook #'popweb-dict-youglish-web-window-hide-after-move))
-
-;;;###autoload
-(defun popweb-dict-youglish-pointer ()
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-youglish-translate (list (popweb-dict-region-or-word)))
-  (add-hook 'post-command-hook #'popweb-dict-youglish-web-window-hide-after-move))
-
-(defvar popweb-dict-youglish-web-window-visible-p nil)
-
-(defun popweb-dict-youglish-web-window-hide-after-move ()
-  (when (and popweb-dict-youglish-web-window-visible-p (popweb-epc-live-p popweb-epc-process))
-    (popweb-call-async "hide_web_window" "dict_youglish")
-    (setq popweb-dict-youglish-web-window-visible-p nil)
-    (remove-hook 'post-command-hook #'popweb-dict-youglish-web-window-hide-after-move)))
-
-(defun popweb-dict-youglish-web-window-can-hide ()
-  (run-with-timer 1 nil (lambda () (setq popweb-dict-youglish-web-window-visible-p t))))
+(popweb-dict-create "youglish"
+                    "https://youglish.com/pronounce/%s/english?"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('body')[0].style.margin = '0'; "
+                     "document.getElementsByTagName('header')[0].style.display = 'none'; "
+                     "document.getElementsByTagName('footer')[0].style.display = 'none'; "
+                     "document.getElementsByClassName('search')[0].style.display = 'none'; "
+                     "document.querySelectorAll('div .g_pr_ad_network')[1].style.display = 'none' ; "
+                     "Array.from(document.querySelectorAll('ins')).forEach(e => { e.style.display = 'none' }); "
+                     "Array.from(document.querySelectorAll('iframe:not(#player)')).forEach(e => { e.style.display = 'none' }); "
+                     ))
 
 (provide 'popweb-dict-youglish)
 

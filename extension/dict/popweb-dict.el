@@ -1,4 +1,4 @@
-;;; popweb-dict.el --- Dict plugin
+;;; popweb-dict.el --- Dict plugin  -*- lexical-binding: t -*-
 
 ;; Filename: popweb-dict.el
 ;; Description: Dict plugin
@@ -115,6 +115,65 @@ Otherwise return word around point."
       (buffer-substring-no-properties (region-beginning)
                                       (region-end))
     (thing-at-point 'word t)))
+
+(cl-defmacro popweb-dict-create (name url js-code)
+  (let* ((var-visible-p (intern (format "popweb-dict-%s-web-window-visible-p" name)))
+         (func-hide-after-move (intern (format "popweb-dict-%s-web-window-hide-after-move" name)))
+         (func-can-hide (intern (format "popweb-dict-%s-web-window-can-hide" name)))
+         (func-pointer (intern (format "popweb-dict-%s-pointer" name)))
+         (func-input (intern (format "popweb-dict-%s-input" name)))
+         (func-translate (intern (format "popweb-dict-%s-translate" name))))
+    `(progn
+       (defvar ,var-visible-p nil)
+
+       (defun ,func-hide-after-move ()
+         (when (and ,var-visible-p (popweb-epc-live-p popweb-epc-process))
+           (popweb-call-async "hide_web_window" (format "dict_%s" ,name))
+           (setq ,var-visible-p nil)
+           (remove-hook 'post-command-hook #',func-hide-after-move)))
+
+       (defun ,func-can-hide ()
+         (run-with-timer 1 nil (lambda () (setq ,var-visible-p t))))
+
+       (defun ,func-translate (info)
+         (let* ((position (popweb-get-cursor-coordinate))
+                (window-header-height (- (nth 1 (window-inside-pixel-edges)) (nth 1 (window-absolute-pixel-edges))))
+                (x (car position))
+                (y (- (cdr position) window-header-height))
+                (x-offset (popweb-get-cursor-x-offset))
+                (y-offset (popweb-get-cursor-y-offset))
+                (frame-x (car (frame-position)))
+                (frame-y (cdr (frame-position)))
+                (frame-w (frame-outer-width))
+                (frame-h (frame-outer-height))
+                (width-scale 0.3)
+                (height-scale 0.5)
+                (word (nth 0 info))
+                (url (format ,url word))
+                (js-code ,js-code))
+           (popweb-dict-say-word word)
+           (popweb-call-async "call_module_method" popweb-dict-module-path
+                              "pop_translate_window"
+                              (list
+                               (format "dict_%s" ,name)
+                               x y x-offset y-offset
+                               frame-x frame-y frame-w frame-h
+                               width-scale height-scale
+                               url js-code))
+           (funcall ',func-can-hide)))
+
+       (defun ,func-pointer ()
+         (interactive)
+         (,func-hide-after-move)
+         (popweb-start ',func-translate (list (popweb-dict-region-or-word)))
+         (add-hook 'post-command-hook #',func-hide-after-move))
+
+       (defun ,func-input (&optional word)
+         (interactive)
+         (,func-hide-after-move)
+         (popweb-start ',func-translate (list (or word (popweb-dict-prompt-input (format "%s dict: " (capitalize ,name))))))
+         (add-hook 'post-command-hook #',func-hide-after-move))
+       )))
 
 (provide 'popweb-dict)
 

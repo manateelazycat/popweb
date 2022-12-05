@@ -1,4 +1,4 @@
-;;; popweb-dict-bing.el --- Bing dict plugin for popweb
+;;; popweb-dict-bing.el --- Bing dict plugin for popweb  -*- lexical-binding: t -*-
 
 ;; Filename: popweb-dict-bing.el
 ;; Description: Bing dict plugin for popweb
@@ -85,66 +85,15 @@
 
 ;;; Code:
 
-(defun popweb-dict-bing-translate (info)
-  (let* ((position (popweb-get-cursor-coordinate))
-         (window-header-height (- (nth 1 (window-inside-pixel-edges)) (nth 1 (window-absolute-pixel-edges))))
-         (x (car position))
-         (y (- (cdr position) window-header-height))
-         (x-offset (popweb-get-cursor-x-offset))
-         (y-offset (popweb-get-cursor-y-offset))
-         (frame-x (car (frame-position)))
-         (frame-y (cdr (frame-position)))
-         (frame-w (frame-outer-width))
-         (frame-h (frame-outer-height))
-         (width-scale 0.3)
-         (height-scale 0.5)
-         (word (nth 0 info))
-         (url (format "http://www.bing.com/dict/search?mkt=zh-cn&q=%s" word))
-         (js-code
-          (concat
-           "window.scrollTo(0, 0); "
-           "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
-           "document.getElementsByClassName('lf_area')[0].style.visibility = 'visible' ; "
-           "document.getElementsByTagName('header')[0].style.display = 'none'; "
-           "document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"
-           )))
-    (popweb-dict-say-word word)
-    (popweb-call-async "call_module_method" popweb-dict-module-path
-                       "pop_translate_window"
-                       (list
-                        "dict_bing"
-                        x y x-offset y-offset
-                        frame-x frame-y frame-w frame-h
-                        width-scale height-scale
-                        url js-code))
-    (popweb-dict-bing-web-window-can-hide)))
-
-;;;###autoload
-(defun popweb-dict-bing-input (&optional word)
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-bing-translate (list (or word (popweb-dict-prompt-input "Bing dict: "))))
-  (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
-
-;;;###autoload
-(defun popweb-dict-bing-pointer ()
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-bing-translate (list (popweb-dict-region-or-word)))
-  (add-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move))
-
-(defvar popweb-dict-bing-web-window-visible-p nil)
-
-(defun popweb-dict-bing-web-window-hide-after-move ()
-  (when (and popweb-dict-bing-web-window-visible-p (popweb-epc-live-p popweb-epc-process))
-    (popweb-call-async "hide_web_window" "dict_bing")
-    (setq popweb-dict-bing-web-window-visible-p nil)
-    (remove-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move)))
-
-(defun popweb-dict-bing-web-window-can-hide ()
-  (run-with-timer 1 nil (lambda () (setq popweb-dict-bing-web-window-visible-p t))))
-
-
+(popweb-dict-create "bing"
+                    "http://www.bing.com/dict/search?mkt=zh-cn&q=%s"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+                     "document.getElementsByClassName('lf_area')[0].style.visibility = 'visible' ; "
+                     "document.getElementsByTagName('header')[0].style.display = 'none'; "
+                     "document.getElementsByClassName('contentPadding')[0].style.padding = '10px';"
+                     ))
 
 (provide 'popweb-dict-bing)
 

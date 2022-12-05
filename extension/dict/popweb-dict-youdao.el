@@ -85,69 +85,20 @@
 
 ;;; Code:
 
-(defun popweb-dict-youdao-translate (info)
-  (let* ((position (popweb-get-cursor-coordinate))
-         (window-header-height (- (nth 1 (window-inside-pixel-edges)) (nth 1 (window-absolute-pixel-edges))))
-         (x (car position))
-         (y (- (cdr position) window-header-height))
-         (x-offset (popweb-get-cursor-x-offset))
-         (y-offset (popweb-get-cursor-y-offset))
-         (frame-x (car (frame-position)))
-         (frame-y (cdr (frame-position)))
-         (frame-w (frame-outer-width))
-         (frame-h (frame-outer-height))
-         (width-scale 0.35)
-         (height-scale 0.5)
-         (word (nth 0 info))
-         (url (format "https://www.youdao.com/w/eng/%s" word))
-         (js-code
-          (concat
-           "window.scrollTo(0, 0); "
-           "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
-           "document.getElementById('results').style.visibility = 'visible'; "
-           "document.getElementById('scontainer').style.margin = '0'; "
-           "document.getElementById('scontainer').style.padding = '0'; "
-           "document.getElementById('result_navigator').style.display = 'none'; "
-           "document.getElementById('container').style.padding = '0'; "
-           "document.getElementById('container').style.paddingLeft = '10px'; "
-           "document.getElementById('container').style.margin = '0'; "
-           "document.getElementById('topImgAd').style.display = 'none'; "
-           )))
-    (popweb-dict-say-word word)
-    (popweb-call-async "call_module_method" popweb-dict-module-path
-                       "pop_translate_window"
-                       (list
-                        "dict_youdao"
-                        x y x-offset y-offset
-                        frame-x frame-y frame-w frame-h
-                        width-scale height-scale
-                        url js-code))
-    (popweb-dict-youdao-web-window-can-hide)))
-
-;;;###autoload
-(defun popweb-dict-youdao-input (&optional word)
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-youdao-translate (list (or word (popweb-dict-prompt-input "Youdao dict: "))))
-  (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
-
-;;;###autoload
-(defun popweb-dict-youdao-pointer ()
-  (interactive)
-  (popweb-dict-youdao-web-window-hide-after-move)
-  (popweb-start 'popweb-dict-youdao-translate (list (popweb-dict-region-or-word)))
-  (add-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move))
-
-(defvar popweb-dict-youdao-web-window-visible-p nil)
-
-(defun popweb-dict-youdao-web-window-hide-after-move ()
-  (when (and popweb-dict-youdao-web-window-visible-p (popweb-epc-live-p popweb-epc-process))
-    (popweb-call-async "hide_web_window" "dict_youdao")
-    (setq popweb-dict-youdao-web-window-visible-p nil)
-    (remove-hook 'post-command-hook #'popweb-dict-youdao-web-window-hide-after-move)))
-
-(defun popweb-dict-youdao-web-window-can-hide ()
-  (run-with-timer 1 nil (lambda () (setq popweb-dict-youdao-web-window-visible-p t))))
+(popweb-dict-create "youdao"
+                    "https://www.youdao.com/w/eng/%s"
+                    (concat
+                     "window.scrollTo(0, 0); "
+                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden'; "
+                     "document.getElementById('results').style.visibility = 'visible'; "
+                     "document.getElementById('scontainer').style.margin = '0'; "
+                     "document.getElementById('scontainer').style.padding = '0'; "
+                     "document.getElementById('result_navigator').style.display = 'none'; "
+                     "document.getElementById('container').style.padding = '0'; "
+                     "document.getElementById('container').style.paddingLeft = '10px'; "
+                     "document.getElementById('container').style.margin = '0'; "
+                     "document.getElementById('topImgAd').style.display = 'none'; "
+                     ))
 
 (provide 'popweb-dict-youdao)
 
