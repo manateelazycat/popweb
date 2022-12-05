@@ -80,7 +80,7 @@
 ;;
 
 ;;; Require
-
+(require 'popweb)
 
 ;;; Code:
 
