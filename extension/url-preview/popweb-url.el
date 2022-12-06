@@ -38,6 +38,7 @@
 (defun popweb-current-line-url ()
   "Return current line url."
   (let ((current-line (thing-at-point 'line t)))
+    (require 'gnus-art)
     (when (string-match gnus-button-url-regexp current-line)
       (popweb-url-local-file-url-completion current-line))))
 
