@@ -34,8 +34,6 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-dict-youdao-input`: Translation given an input with Youdao
 * `M-x popweb-dict-youglish-pointer`: Translation at point with youglish.com
 * `M-x popweb-dict-youglish-input`: Translation given an input with youglish.com
-* `M-x popweb-dict-collins-pointer`: Translation at point with collinsdictionary.com
-* `M-x popweb-dict-collins-input`: Translation given an input with collinsdictionary.com
 * `M-x popweb-dict-dictcn-pointer`: Translation at point with dict.cn
 * `M-x popweb-dict-dictcn-input`: Translation given an input with dict.cn
 * `M-x popweb-org-roam-link-show`: Preview Org-Roam ID link or footnote link at point.

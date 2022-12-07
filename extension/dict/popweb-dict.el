@@ -235,25 +235,6 @@ Otherwise return word around point."
                      "Array.from(document.querySelectorAll('iframe')).forEach(e => { e.style.display = 'none' })"
                      ))
 
-(popweb-dict-create "collins"
-                    "https://www.collinsdictionary.com/zh/dictionary/english-chinese/%s"
-                    (concat
-                     "window.scrollTo(0, 0);"
-                     "document.getElementsByTagName('html')[0].style.visibility = 'hidden';"
-                     "document.getElementsByClassName('res_cell_center')[0].style.visibility = 'visible' ;"
-                     "document.getElementsByClassName('tabsNavigation')[0].style.display = 'none' ;"
-                     "document.getElementsByClassName('carousel')[0].style.display = 'none' ;"
-                     "document.getElementsByClassName('btmslot_a-container')[0].style.display = 'none' ;"
-                     "document.getElementsByClassName('carousel-title')[1].style.display = 'none' ;"
-                     "document.getElementsByClassName('cB-hook')[0].style.display = 'none' ;"
-                     "document.getElementsByClassName('mpuslot_b-container')[0].style.display = 'none' ;"
-                     "document.getElementById('onetrust-consent-sdk').style.display = 'none' ;"
-                     "document.getElementsByClassName('res_cell_left')[0].style.width = '0' ;"
-                     "document.getElementsByClassName('topslot_container')[0].style.height = '0' ;"
-                     "document.querySelector('main').style.padding = '0' ;"
-                     "document.querySelector('footer').style.display = 'none' ;"
-                     ))
-
 (provide 'popweb-dict)
 
 ;;; popweb-dict.el ends here
