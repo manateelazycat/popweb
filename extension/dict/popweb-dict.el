@@ -87,7 +87,11 @@
 (setq popweb-dict-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
 (setq popweb-dict-audio-process nil)
 
-(defun popweb-dict-say-word (word)
+(defun popweb-dict-say-word (&optional word)
+  (interactive)
+  (unless word
+    (setq word (popweb-dict-region-or-word))
+    (message "Saying %s ..." word))
   (if (featurep 'cocoa)
       (call-process-shell-command
        (format "say %s" word) nil 0)
