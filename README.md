@@ -116,8 +116,8 @@ You can choose either scaled to emacs or in pixes by customizing
 Popup window scales to Emacs's.
 ### Absolute
 ```
-(sqtq popweb-url-web-window-width-absolute 480)
-(sqtq popweb-url-web-window-height-absolute 270)
+(setq popweb-url-web-window-width-absolute 480)
+(setq popweb-url-web-window-height-absolute 270)
 ```
 Popup window's size in pixels
 
