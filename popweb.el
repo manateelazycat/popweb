@@ -178,6 +178,10 @@ Available options:
 Then POPWEB will start by gdb, please send new issue with `*popweb*' buffer content when next crash."
   :type 'boolean)
 
+(defcustom popweb-enable-developer-tools nil
+  "When you want use web developer tools, turn on this option."
+  :type 'boolean)
+
 (defcustom popweb-start-python-process-when-require t
   "Start POPWEB python process when require `popweb', default is turn on.
 

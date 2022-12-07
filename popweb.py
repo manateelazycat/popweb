@@ -174,6 +174,14 @@ class BrowserPage(QWebEnginePage):
         self.result = result
         self.loop.quit()
 
+class WebView(QWebEngineView):
+    shown = QtCore.pyqtSignal(object)
+
+    def showEvent(self, event) -> None:
+        self.shown.emit(self)
+        
+        event.accept()
+        
 class WebWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -199,12 +207,12 @@ class WebWindow(QWidget):
 
         self.update_theme_mode()
 
-        self.webview = QWebEngineView()
+        self.webview = WebView()
         self.web_page = BrowserPage()
         self.webview.setPage(self.web_page)
-
         self.web_page.setBackgroundColor(QColor(get_emacs_func_result("popweb-get-theme-background", [])))
 
+        self.webview.shown.connect(self.show_handler)
         self.webview.loadStarted.connect(lambda : self.reset_zoom())
         self.webview.loadProgress.connect(lambda : self.execute_loading_js_code())
         self.webview.loadFinished.connect(self.execute_load_finish_js_code)
@@ -227,6 +235,19 @@ class WebWindow(QWidget):
         except Exception:
             import traceback
             traceback.print_exc()
+            
+    def show_handler(self, event):
+        enable_developer_tools = get_emacs_var("popweb-enable-developer-tools")
+        if enable_developer_tools:
+            self.developer_tools_view = QWebEngineView()
+            self.developer_tools_view.setZoomFactor(self.zoom_factor)
+            self.web_page.setDevToolsPage(self.developer_tools_view.page())
+            
+            screen = QApplication.instance().primaryScreen()    # type: ignore
+            self.developer_tools_view.resize(int(screen.size().width() / 2),
+                                             int(screen.size().height() / 2))
+                
+            self.developer_tools_view.show()
 
     def reset_zoom(self):
         self.webview.setZoomFactor(self.zoom_factor)
@@ -398,6 +419,8 @@ class POPWEB(object):
             web_window = self.web_window_dict[module_name]
             web_window.hide()
             web_window.webview.load(QUrl(""))
+            
+            web_window.developer_tools_view.hide()
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''

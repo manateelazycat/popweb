@@ -121,6 +121,12 @@ Popup window scales to Emacs's.
 ```
 Popup window's size in pixels
 
+## Open developer tools
+You can set option `popweb-enable-developer-tools` with `t`, then you can debug popweb page like normal browser does.
+
+<p align="center">
+  <img width="800" src="./img/developer-tools.png">
+</p>
 
 ## Report bug
 Please use `emacs -q` and load a minimal setup with only popweb to verify that the bug is reproducible. If `emacs -q` works fine, probably something is wrong with your Emacs config.
