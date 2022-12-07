@@ -212,6 +212,7 @@ Otherwise return word around point."
                      "document.getElementsByTagName('footer')[0].style.display = 'none'; "
                      "document.getElementsByClassName('search')[0].style.display = 'none'; "
                      "document.querySelectorAll('div .g_pr_ad_network')[1].style.display = 'none' ; "
+                     "document.querySelectorAll('div .g_pr_ad_network')[3].style.margin = '0' ; "
                      "Array.from(document.querySelectorAll('ins')).forEach(e => { e.style.display = 'none' }); "
                      "Array.from(document.querySelectorAll('iframe:not(#player)')).forEach(e => { e.style.display = 'none' }); "
                      ))
