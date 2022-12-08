@@ -87,6 +87,11 @@
 (setq popweb-dict-module-path (concat (file-name-directory load-file-name) "popweb-dict.py"))
 (setq popweb-dict-audio-process nil)
 
+(defcustom popweb-dict-say-word-p t
+   "Whether play voice when search words.
+Default value is t."
+  :type 'boolean)
+
 (defun popweb-dict-say-word (&optional word)
   (interactive)
   (unless word
@@ -124,6 +129,7 @@ Otherwise return word around point."
 
 (cl-defmacro popweb-dict-create (name url js-code)
   (let* ((var-visible-p (intern (format "popweb-dict-%s-web-window-visible-p" name)))
+         (var-say-word-process (intern (format "popweb-dict-%s-say-word-process" name)))
          (func-hide-after-move (intern (format "popweb-dict-%s-web-window-hide-after-move" name)))
          (func-can-hide (intern (format "popweb-dict-%s-web-window-can-hide" name)))
          (func-pointer (intern (format "popweb-dict-%s-pointer" name)))
@@ -131,12 +137,14 @@ Otherwise return word around point."
          (func-translate (intern (format "popweb-dict-%s-translate" name))))
     `(progn
        (defvar ,var-visible-p nil)
+       (defvar ,var-say-word-process nil)
 
        (defun ,func-hide-after-move ()
          (when (and ,var-visible-p (popweb-epc-live-p popweb-epc-process))
            (popweb-call-async "hide_web_window" (format "dict_%s" ,name))
            (setq ,var-visible-p nil)
-           (when popweb-dict-audio-process (delete-process popweb-dict-audio-process))
+           (when (and popweb-dict-say-word-p (process-live-p ,var-say-word-process))
+             (kill-process ,var-say-word-process))
            (remove-hook 'post-command-hook #',func-hide-after-move)))
 
        (defun ,func-can-hide ()
@@ -158,7 +166,7 @@ Otherwise return word around point."
                 (word (nth 0 info))
                 (url (format ,url word))
                 (js-code (format "try { %s } catch (err) { console.log(err.message) }" ,js-code)))
-           (popweb-dict-say-word word)
+           (if popweb-dict-say-word-p (setq ,var-say-word-process (popweb-dict-say-word word)))
            (popweb-call-async "call_module_method" popweb-dict-module-path
                               "pop_translate_window"
                               (list
