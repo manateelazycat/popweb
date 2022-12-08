@@ -420,7 +420,8 @@ class POPWEB(object):
             web_window.hide()
             web_window.webview.load(QUrl(""))
             
-            web_window.developer_tools_view.hide()
+            if hasattr(web_window, "developer_tools_view"):
+                web_window.developer_tools_view.hide()
 
     def cleanup(self):
         '''Do some cleanup before exit python process.'''
