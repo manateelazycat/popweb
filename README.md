@@ -22,8 +22,7 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 
 ;; Chinese-English translation popup
 (add-to-list 'load-path "<path-to-popweb>/extension/dict") ;
-(require 'popweb-dict-bing) ; Translation using Bing
-(require 'popweb-dict-youdao) ; Translation using Youdao
+(require 'popweb-dict) 
 ```
 
 ## Usage
