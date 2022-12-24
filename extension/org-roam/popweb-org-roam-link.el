@@ -279,6 +279,54 @@
                              #'popweb-org-roam-node-preview-select-action
                              'popweb-org-roam-node-preview-select))
 
+(defun popweb-org-roam-node-backlinks-preview ()
+  (interactive)
+  (let* ((id (ignore-errors
+                    (save-match-data
+                      (org-roam-node-id (org-roam-node-at-point)))))
+         (node (if id (org-roam-node-from-id id) (org-roam-node-at-point t)))
+         (backlinks (--filter (and (> (org-roam-node-level node) 0)
+                                   (->> (org-roam-backlink-source-node it)
+                                        (org-roam-node-file)
+                                        (s-contains? "private/") (not)))
+                              (org-roam-backlinks-get node)))
+         (reference-and-footnote-string-list
+          (-map (lambda (backlink)
+                  (let* ((source-node (org-roam-backlink-source-node backlink))
+                         (source-file (org-roam-node-file source-node))
+                         (properties (org-roam-backlink-properties backlink))
+                         (outline (when-let ((outline (plist-get properties :outline)))
+                                    (when (> (length outline) 1)
+                                      (mapconcat #'org-link-display-format outline " > "))))
+                         (point (org-roam-backlink-point backlink))
+                         (text (s-replace "\n" " " (org-roam-preview-get-contents
+                                                    source-file
+                                                    point)))
+                         (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                            (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                            (org-roam-node-id source-node)
+                                            (org-roam-node-title source-node)
+                                            (if outline (format "%s (/%s/)"
+                                                                (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                            text))
+                         (label-list (with-temp-buffer
+                                       (insert-file-contents source-file)
+                                       (org-element-map (org-element-parse-buffer) 'footnote-reference
+                                         (lambda (reference)
+                                           (org-element-property :label reference)))))
+                         (footnote-list
+                          (with-temp-buffer
+                            (insert-file-contents source-file)
+                            (-map (lambda (label) (buffer-substring-no-properties
+                                                   (nth 1 (org-footnote-get-definition label))
+                                                   (nth 2 (org-footnote-get-definition label))))
+                                  label-list)))
+                         (footnote-string-list (string-join footnote-list "\n"))
+                         (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
+                    reference-and-footnote-string)
+                  ) backlinks)))
+    (popweb-org-roam-link-show (string-join reference-and-footnote-string-list "\n"))))
+
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
   (when (and popweb-org-roam-link-preview-window-visible-p (popweb-epc-live-p popweb-epc-process))
     (setq org-roam-link-preview--previous-html nil)
