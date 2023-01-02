@@ -192,7 +192,7 @@
 
 (defun get-html-from-org-context (context)
   (if (not (string-empty-p context))
-      (org-export-string-as context 'html)
+      (let ((org-export-before-processing-hook '(org-blackfriday--reset-org-blackfriday--code-block-num-backticks))) (org-export-string-as context 'html))
     (progn
       (user-error "%s" "Nothing to preview or this kind of link is not supported yet!")
       nil)))
@@ -285,24 +285,22 @@
                     (save-match-data
                       (org-roam-node-id (org-roam-node-at-point)))))
          (node (if id (org-roam-node-from-id id) (org-roam-node-at-point t)))
-         (backlinks (--filter (and (> (org-roam-node-level node) 0)
-                                   (->> (org-roam-backlink-source-node it)
+         (backlinks (--filter (->> (org-roam-backlink-source-node it)
                                         (org-roam-node-file)
-                                        (s-contains? "private/") (not)))
+                                        (s-contains? "private/") (not))
                               (org-roam-backlinks-get node)))
-         (reference-and-footnote-string-list
+         (content-and-footnote-string-list
           (-map (lambda (backlink)
                   (let* ((source-node (org-roam-backlink-source-node backlink))
                          (source-file (org-roam-node-file source-node))
                          (properties (org-roam-backlink-properties backlink))
-                         (outline (when-let ((outline (plist-get properties :outline)))
-                                    (when (> (length outline) 1)
-                                      (mapconcat #'org-link-display-format outline " > "))))
+                         (outline (if-let ((outline (plist-get properties :outline)))
+                                      (mapconcat #'org-link-display-format outline " > ")))
                          (point (org-roam-backlink-point backlink))
-                         (text (s-replace "\n" " " (org-roam-preview-get-contents
+                         (text (org-roam-preview-get-contents
                                                     source-file
-                                                    point)))
-                         (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                                    point))
+                         (content (format "%s [[id:%s][%s]]\n%s\n%s"
                                             (s-repeat (+ (org-roam-node-level node) 2) "*")
                                             (org-roam-node-id source-node)
                                             (org-roam-node-title source-node)
@@ -322,10 +320,10 @@
                                                    (nth 2 (org-footnote-get-definition label))))
                                   label-list)))
                          (footnote-string-list (string-join footnote-list "\n"))
-                         (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
-                    reference-and-footnote-string)
+                         (content-and-footnote-string (format "%s\n%s" content footnote-string-list)))
+                    content-and-footnote-string)
                   ) backlinks)))
-    (popweb-org-roam-link-show (string-join reference-and-footnote-string-list "\n"))))
+    (popweb-org-roam-link-show (string-join content-and-footnote-string-list "\n"))))
 
 (defun popweb-org-roam-link-preview-window-hide-after-move ()
   (when (and popweb-org-roam-link-preview-window-visible-p (popweb-epc-live-p popweb-epc-process))
