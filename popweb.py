@@ -196,9 +196,9 @@ class WebWindow(QWidget):
         self.vbox = QVBoxLayout(self)
         self.vbox.setContentsMargins(0, 0, 0, 0)
 
-        self.zoom_factor = 1
+        self.zoom_factor = get_emacs_var("popweb-zoom-factor")
         if screen_size.width() > 3000:
-            self.zoom_factor = 2
+            self.zoom_factor = self.zoom_factor * 2
 
         self.loading_js_code = ""
         self.load_finish_callback = None

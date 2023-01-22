@@ -93,6 +93,13 @@ If you use Socks5 as a local proxy, one can set proxy type with:
 (setq popweb-proxy-type "socks5")
 ```
 
+### Font size
+If you think the font of popup web page is too small, you can change value of `popweb-zoom-factor`.
+
+```Elisp
+(setq popweb-zoom-factor 1.5)
+```
+
 ### Configure Org-Roam link popup window size
 ```
 (setq popweb-org-roam-link-popup-window-width-scale 0.8)
