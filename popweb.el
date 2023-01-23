@@ -188,6 +188,10 @@ Then POPWEB will start by gdb, please send new issue with `*popweb*' buffer cont
 Turn on this option will improve start speed."
   :type 'boolean)
 
+(defcustom popweb-zoom-factor 1
+  "Zoom factor for web page."
+  :type 'integer)
+
 (defun popweb-call-async (method &rest args)
   "Call Python EPC function METHOD and ARGS asynchronously."
   (popweb-deferred-chain
