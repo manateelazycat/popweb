@@ -235,9 +235,8 @@ Turn on this option will improve start speed."
       ;; Only enable this option on Linux platform.
       (when (and (eq system-type 'gnu/linux)
                  (not (popweb-emacs-running-in-wayland-native)))
-        (add-to-list 'environments "QT_QPA_PLATFORM=xcb" t))
-
-      environments)))
+        (add-to-list 'environments "QT_QPA_PLATFORM=xcb" t)))
+    environments))
 
 (defun popweb-restart-process ()
   "Stop and restart POPWEB process."
