@@ -11,7 +11,7 @@
 ;; Compatibility: GNU Emacs 29.0.50
 ;;
 ;; Features that might be required by this library:
-;; Package-Requires: ((org) (org-roam "20220121.2350") (org-transclusion "20220114.9") (ivy "20211231.1730") (dash "20210826.1149"))
+;; Package-Requires: ((org) (org-roam "20220121.2350") (org-transclusion "20220114.9") (ivy "20211231.1730") (s "1.12.0") (dash "20210826.1149") (ox-hugo))
 ;;
 ;;
 
@@ -68,6 +68,8 @@
 
 ;;; Require
 (require 'ox)
+(require 'ox-hugo)
+(require 's)
 (require 'dash)
 (require 'org-roam)
 (require 'org-transclusion)
