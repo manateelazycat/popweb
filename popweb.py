@@ -27,7 +27,6 @@ from PyQt6 import QtCore
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import QUrl, Qt, QEventLoop
 from PyQt6.QtNetwork import QNetworkProxy, QNetworkProxyFactory
-from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
 from PyQt6.QtWidgets import QWidget, QApplication, QVBoxLayout
 from epc.client import EPCClient
@@ -73,7 +72,7 @@ epc_client = None
 def init_epc_client(emacs_server_port):
     global epc_client
 
-    if epc_client == None:
+    if epc_client is None:
         try:
             epc_client = EPCClient(("localhost", emacs_server_port), log_traceback=True)
         except ConnectionRefusedError:
@@ -83,7 +82,7 @@ def init_epc_client(emacs_server_port):
 def close_epc_client():
     global epc_client
 
-    if epc_client != None:
+    if epc_client is not None:
         epc_client.close()
 
 def convert_arg_to_str(arg):
@@ -104,7 +103,7 @@ def string_to_base64(text):
 def eval_in_emacs(method_name, args):
     global epc_client
 
-    if epc_client == None:
+    if epc_client is None:
         print("Please call init_epc_client first before callling eval_in_emacs.")
     else:
         args = list(map(convert_arg_to_str, args))
@@ -119,7 +118,7 @@ def eval_in_emacs(method_name, args):
 
 def convert_emacs_bool(symbol_value, symbol_is_boolean):
     if symbol_is_boolean == "t":
-        return symbol_value == True
+        return symbol_value is True
     else:
         return symbol_value
 
@@ -138,7 +137,7 @@ def get_emacs_var(var_name):
 def get_emacs_func_result(method_name, args):
     global epc_client
 
-    if epc_client == None:
+    if epc_client is None:
         print("Please call init_epc_client first before callling eval_in_emacs.")
     else:
         args = list(map(convert_arg_to_str, args))
@@ -174,14 +173,6 @@ class BrowserPage(QWebEnginePage):
         self.result = result
         self.loop.quit()
 
-class WebView(QWebEngineView):
-    shown = QtCore.pyqtSignal(object)
-
-    def showEvent(self, event) -> None:
-        self.shown.emit(self)
-        
-        event.accept()
-        
 class WebWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -207,12 +198,17 @@ class WebWindow(QWidget):
 
         self.update_theme_mode()
 
-        self.webview = WebView()
+        self.webview = QWebEngineView()
         self.web_page = BrowserPage()
         self.webview.setPage(self.web_page)
         self.web_page.setBackgroundColor(QColor(get_emacs_func_result("popweb-get-theme-background", [])))
 
-        self.webview.shown.connect(self.show_handler)
+        self.developer_tools_view = QWebEngineView()
+        self.developer_tools_view.setZoomFactor(self.zoom_factor)
+        screen = QApplication.instance().primaryScreen()    # type: ignore
+        self.developer_tools_view.resize(int(screen.size().width() / 2),
+                                         int(screen.size().height() / 2))
+
         self.webview.loadStarted.connect(lambda : self.reset_zoom())
         self.webview.loadProgress.connect(lambda : self.execute_loading_js_code())
         self.webview.loadFinished.connect(self.execute_load_finish_js_code)
@@ -235,18 +231,13 @@ class WebWindow(QWidget):
         except Exception:
             import traceback
             traceback.print_exc()
-            
-    def show_handler(self, event):
+
+    def popup(self):
+        self.show()
+
         enable_developer_tools = get_emacs_var("popweb-enable-developer-tools")
         if enable_developer_tools:
-            self.developer_tools_view = QWebEngineView()
-            self.developer_tools_view.setZoomFactor(self.zoom_factor)
             self.web_page.setDevToolsPage(self.developer_tools_view.page())
-            
-            screen = QApplication.instance().primaryScreen()    # type: ignore
-            self.developer_tools_view.resize(int(screen.size().width() / 2),
-                                             int(screen.size().height() / 2))
-                
             self.developer_tools_view.show()
 
     def reset_zoom(self):
@@ -264,7 +255,7 @@ class WebWindow(QWidget):
             self.enable_dark_mode()
 
     def execute_load_finish_js_code(self):
-        if self.load_finish_callback != None:
+        if self.load_finish_callback is not None:
             self.load_finish_callback()
 
     def load_dark_mode_js(self):

@@ -20,4 +20,4 @@ def pop_org_roam_link_window(popweb, module_name, index_file, x, y, x_offset,
     web_window.update_theme_mode()
     web_window.resize(int(window_width), int(window_height))
     web_window.move(int(window_x), int(window_y))
-    web_window.show()
+    web_window.popup()

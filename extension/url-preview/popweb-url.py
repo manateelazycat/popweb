@@ -14,4 +14,4 @@ def pop_url_window(popweb, module_name, x, y, x_offset, y_offset, frame_x, frame
     web_window.update_theme_mode()
     web_window.resize(int(window_width), int(window_height))
     web_window.move(int(window_x), int(window_y))
-    web_window.show()
+    web_window.popup()

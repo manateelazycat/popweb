@@ -42,7 +42,7 @@ def adjust_latex_window(popweb, web_window, window_x, window_y, x_offset, y_offs
     web_window.move(window_x, window_y)
 
     if show_window:
-        web_window.show()
+        web_window.popup()
 
 def pop_latex_window(popweb, module_name, index_file, x, y, x_offset, y_offset, frame_x, frame_y, frame_w, frame_h, show_window, new_latex, latex_string):
     web_window = popweb.get_web_window(module_name)
