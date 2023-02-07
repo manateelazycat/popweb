@@ -127,7 +127,7 @@ Otherwise return word around point."
                                       (region-end))
     (thing-at-point 'word t)))
 
-(cl-defmacro popweb-dict-create (name url js-code)
+(cl-defmacro popweb-dict-create (name url js-code &optional js-file-code)
   (let* ((var-visible-p (intern (format "popweb-dict-%s-web-window-visible-p" name)))
          (var-say-word-process (intern (format "popweb-dict-%s-say-word-process" name)))
          (func-hide-after-move (intern (format "popweb-dict-%s-web-window-hide-after-move" name)))
@@ -165,7 +165,9 @@ Otherwise return word around point."
                 (height-scale 0.5)
                 (word (nth 0 info))
                 (url (format ,url word))
-                (js-code (format "try { %s } catch (err) { console.log(err.message) }" ,js-code)))
+                (js-code (format "try { %s } catch (err) { console.log(err.message) }" ,js-code))
+                (js-file-code (format "%s" ,js-file-code))
+                (args (nth 0 (cdr info))))
            (if popweb-dict-say-word-p (setq ,var-say-word-process (popweb-dict-say-word word)))
            (popweb-call-async "call_module_method" popweb-dict-module-path
                               "pop_translate_window"
@@ -174,7 +176,8 @@ Otherwise return word around point."
                                x y x-offset y-offset
                                frame-x frame-y frame-w frame-h
                                width-scale height-scale
-                               url js-code))
+                               url js-code
+                               js-file-code args))
            (funcall ',func-can-hide)))
 
        (defun ,func-pointer ()
@@ -183,12 +186,26 @@ Otherwise return word around point."
          (popweb-start ',func-translate (list (popweb-dict-region-or-word)))
          (add-hook 'post-command-hook #',func-hide-after-move))
 
-       (defun ,func-input (&optional word)
+       (defun ,func-input (&optional word &rest args)
          (interactive)
          (,func-hide-after-move)
-         (popweb-start ',func-translate (list (or word (popweb-dict-prompt-input (format "%s dict: " (capitalize ,name))))))
+         (popweb-start ',func-translate (list (or word (popweb-dict-prompt-input (format "%s dict: " (capitalize ,name)))) args))
          (add-hook 'post-command-hook #',func-hide-after-move))
        )))
+
+(defun popweb-join-dirs (root &rest dirs)
+  "Joins a series of directories together, like Python's os.path.join,
+  (dotemacs-joindirs \"/tmp\" \"a\" \"b\" \"c\") => /tmp/a/b/c"
+  (if (not dirs)
+      root
+    (apply 'popweb-join-dirs
+           (expand-file-name (car dirs) root)
+           (cdr dirs))))
+
+(defun popweb-load-js-code (file)
+  (with-temp-buffer
+    (insert-file-contents (popweb-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
+    (buffer-string)))
 
 (popweb-dict-create "bing"
                     "http://www.bing.com/dict/search?mkt=zh-cn&q=%s"

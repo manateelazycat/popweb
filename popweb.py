@@ -192,6 +192,8 @@ class WebWindow(QWidget):
             self.zoom_factor = self.zoom_factor * 2
 
         self.loading_js_code = ""
+        self.js_file_code = ""
+        self.js_file_code_args = None
         self.load_finish_callback = None
 
         self.dark_mode_js = open(os.path.join(os.path.dirname(__file__), "darkreader.js")).read()
@@ -255,6 +257,9 @@ class WebWindow(QWidget):
             self.enable_dark_mode()
 
     def execute_load_finish_js_code(self):
+        if self.js_file_code != "":
+            js_code = self.js_file_code + "({0});".format(self.js_file_code_args)
+            self.webview.page().runJavaScript(js_code)
         if self.load_finish_callback is not None:
             self.load_finish_callback()
 
@@ -410,7 +415,7 @@ class POPWEB(object):
             web_window = self.web_window_dict[module_name]
             web_window.hide()
             web_window.webview.load(QUrl(""))
-            
+
             if hasattr(web_window, "developer_tools_view"):
                 web_window.developer_tools_view.hide()
 
