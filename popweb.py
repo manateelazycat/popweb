@@ -258,7 +258,7 @@ class WebWindow(QWidget):
 
     def execute_load_finish_js_code(self):
         if self.js_file_code != "":
-            js_code = self.js_file_code + "({0});".format(self.js_file_code_args)
+            js_code = self.js_file_code + "({0});".format(str(self.js_file_code_args or ""))
             self.webview.page().runJavaScript(js_code)
         if self.load_finish_callback is not None:
             self.load_finish_callback()
