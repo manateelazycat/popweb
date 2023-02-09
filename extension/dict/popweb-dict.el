@@ -193,12 +193,6 @@ Otherwise return word around point."
          (add-hook 'post-command-hook #',func-hide-after-move))
        )))
 
-(defun popweb-dict-join-dirs (root dir file)
-  (file-name-concat root dir file))
-
-(defun popweb-dict-js-file-path (file)
-  (popweb-dict-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
-
 (popweb-dict-create "bing"
                     "http://www.bing.com/dict/search?mkt=zh-cn&q=%s"
                     (concat
