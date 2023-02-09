@@ -127,7 +127,7 @@ Otherwise return word around point."
                                       (region-end))
     (thing-at-point 'word t)))
 
-(cl-defmacro popweb-dict-create (name url js-code &optional js-file-code)
+(cl-defmacro popweb-dict-create (name url js-code &optional js-file)
   (let* ((var-visible-p (intern (format "popweb-dict-%s-web-window-visible-p" name)))
          (var-say-word-process (intern (format "popweb-dict-%s-say-word-process" name)))
          (func-hide-after-move (intern (format "popweb-dict-%s-web-window-hide-after-move" name)))
@@ -166,7 +166,7 @@ Otherwise return word around point."
                 (word (nth 0 info))
                 (url (format ,url word))
                 (js-code (format "try { %s } catch (err) { console.log(err.message) }" ,js-code))
-                (js-file-code (format "%s" ,js-file-code))
+                (js-file (format "%s" ,js-file))
                 (args (nth 0 (cdr info))))
            (if popweb-dict-say-word-p (setq ,var-say-word-process (popweb-dict-say-word word)))
            (popweb-call-async "call_module_method" popweb-dict-module-path
@@ -177,7 +177,7 @@ Otherwise return word around point."
                                frame-x frame-y frame-w frame-h
                                width-scale height-scale
                                url js-code
-                               js-file-code args))
+                               js-file args))
            (funcall ',func-can-hide)))
 
        (defun ,func-pointer ()
@@ -193,19 +193,11 @@ Otherwise return word around point."
          (add-hook 'post-command-hook #',func-hide-after-move))
        )))
 
-(defun popweb-join-dirs (root &rest dirs)
-  "Joins a series of directories together, like Python's os.path.join,
-  (dotemacs-joindirs \"/tmp\" \"a\" \"b\" \"c\") => /tmp/a/b/c"
-  (if (not dirs)
-      root
-    (apply 'popweb-join-dirs
-           (expand-file-name (car dirs) root)
-           (cdr dirs))))
+(defun popweb-join-dirs (root dir file)
+  (file-name-concat root dir file))
 
-(defun popweb-load-js-code (file)
-  (with-temp-buffer
-    (insert-file-contents (popweb-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
-    (buffer-string)))
+(defun popweb-dict-js-file-path (file)
+  (popweb-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
 
 (popweb-dict-create "bing"
                     "http://www.bing.com/dict/search?mkt=zh-cn&q=%s"
