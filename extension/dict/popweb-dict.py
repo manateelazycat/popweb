@@ -38,10 +38,12 @@ def pop_translate_window(popweb, module_name, x, y, x_offset, y_offset, frame_x,
 
 def read_js_content(js_file):
     ''' Read content of JavaScript(js) files.'''
-     if os.path.exists(js_file):
+    import os
+    if os.path.exists(js_file):
         with open(js_file, "r") as fp:
              return(fp.read())
-     else:
+    else:
           print("File not found: %s\n" % js_file)
           return("")
+
 
