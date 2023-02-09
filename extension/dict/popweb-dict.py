@@ -41,9 +41,7 @@ def read_js_content(js_file):
     import os
     if os.path.exists(js_file):
         with open(js_file, "r") as fp:
-             return(fp.read())
+            return(fp.read())
     else:
-          print("File not found: %s\n" % js_file)
-          return("")
-
-
+        print("File not found: %s\n" % js_file)
+        return("")
