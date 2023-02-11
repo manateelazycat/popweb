@@ -6,8 +6,9 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ## Installation
 1. Install PyQt6: ```pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6```
 2. Install [python-epc](https://github.com/tkf/python-epc): ```pip install epc```
-3. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
-4. In your `~/.emacs`, add the following lines:
+3. Install [browser_cookie3](https://github.com/borisbabic/browser_cookie3)(optional, for import cookies from browser): ```pip install browser_cookie3```
+4. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
+5. In your `~/.emacs`, add the following lines:
 ```elisp
 (add-to-list 'load-path "<path-to-popweb>") ; add popweb to your load-path
 
@@ -38,6 +39,7 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-org-roam-link-show`: Preview Org-Roam ID link or footnote link at point.
 * `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a Org-mode buffer by ivy, then preview the content of link.
 * `M-x popweb-org-roam-node-preview-select` Select one Org-Roam node by ivy, then hit `C-M-m ivy-call` to preview the content of node without exit ivy windown.
+* `M-x popweb-import-browser-cookies` Import cookies for the specified domain name.
 ## Screenshots
 ### LaTeX Preview
 <p align="center">
