@@ -192,6 +192,11 @@ Turn on this option will improve start speed."
   "Zoom factor for web page."
   :type 'integer)
 
+(defcustom popweb-config-location (expand-file-name (locate-user-emacs-file "popweb/"))
+  "Directory where popweb will store configuration files."
+  :type 'directory)
+
+
 (defun popweb-call-async (method &rest args)
   "Call Python EPC function METHOD and ARGS asynchronously."
   (popweb-deferred-chain
@@ -378,6 +383,16 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
             (popweb-color-int-to-hex (nth 0 components))
             (popweb-color-int-to-hex (nth 1 components))
             (popweb-color-int-to-hex (nth 2 components)))))
+
+
+(defun popweb-import-browser-cookies (browser domain-name)
+  "Import cookies for the specified domain name."
+  (interactive (list (completing-read "Which browser ? "
+                                      '("chrome" "chromium" "opera" "opera_gx" "brave" "edge" "vivaldi" "firefox" "safari") nil t)
+                     (read-string "Domain name: ")))
+  (popweb-start #'(lambda (&rest _)
+                    (popweb-call-async "import_browser_cookies" browser domain-name)) nil))
+
 
 (provide 'popweb)
 
