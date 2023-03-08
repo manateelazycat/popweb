@@ -5,7 +5,7 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 
 ## Installation
 1. Install PyQt6: ```pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6```
-2. Install [python-epc](https://github.com/tkf/python-epc): ```pip install epc```
+2. Install [python-epc](https://github.com/tkf/python-epc): ```pip install epc sexpdata==0.0.3```
 3. Install [browser_cookie3](https://github.com/borisbabic/browser_cookie3)(optional, for import cookies from browser): ```pip install browser_cookie3```
 4. Clone or download this repository (path of the folder is the `<path-to-popweb>` used below).
 5. In your `~/.emacs`, add the following lines:
