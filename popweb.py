@@ -410,6 +410,10 @@ class WebWindow(QWidget):
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.AllowGeolocationOnInsecureOrigins, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.ShowScrollBars, False)
         except Exception:
             import traceback
