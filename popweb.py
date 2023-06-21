@@ -639,7 +639,7 @@ if __name__ == "__main__":
             "--enable-gpu-rasterization",
             "--enable-native-gpu-memory-buffers"]
 
-    app = QApplication(sys.argv + ["--disable-web-security"] + hardware_acceleration_args)
+    app = QApplication(sys.argv + hardware_acceleration_args)
     screen = app.primaryScreen()
     screen_size = screen.size()
 

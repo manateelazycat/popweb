@@ -236,6 +236,9 @@ Turn on this option will improve start speed."
       ;; Make sure EAF application scale support 4k screen.
       (add-to-list 'environments "QT_SCALE_FACTOR=1" t)
 
+      ;; Fix CORS problem.
+      (add-to-list 'environments "QTWEBENGINE_CHROMIUM_FLAGS=--disable-web-security" t)
+
       ;; Use XCB for input event transfer.
       ;; Only enable this option on Linux platform.
       (when (and (eq system-type 'gnu/linux)
