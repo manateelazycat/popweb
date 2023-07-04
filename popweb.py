@@ -74,7 +74,7 @@ def init_epc_client(emacs_server_port):
 
     if epc_client is None:
         try:
-            epc_client = EPCClient(("localhost", emacs_server_port), log_traceback=True)
+            epc_client = EPCClient(("127.0.0.1", emacs_server_port), log_traceback=True)
         except ConnectionRefusedError:
             import traceback
             traceback.print_exc()
@@ -467,7 +467,7 @@ class POPWEB(object):
         init_epc_client(int(args[0]))
 
         # Build EPC server.
-        self.server = ThreadingEPCServer(('localhost', 0), log_traceback=True)
+        self.server = ThreadingEPCServer(('127.0.0.1', 0), log_traceback=True)
         # self.server.logger.setLevel(logging.DEBUG)
         self.server.allow_reuse_address = True
 

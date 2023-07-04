@@ -340,7 +340,7 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
                             :commands (cons popweb-internal-process-prog popweb-internal-process-args)
                             :title (mapconcat 'identity (cons popweb-internal-process-prog popweb-internal-process-args) " ")
                             :port popweb-epc-port
-                            :connection (popweb-epc-connect "localhost" popweb-epc-port)
+                            :connection (popweb-epc-connect "127.0.0.1" popweb-epc-port)
                             ))
   (popweb-epc-init-epc-layer popweb-epc-process)
   (when popweb--first-start-args
