@@ -23,7 +23,11 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 
 ;; Chinese-English translation popup
 (add-to-list 'load-path "<path-to-popweb>/extension/dict") ;
-(require 'popweb-dict) 
+(require 'popweb-dict)
+
+;; Anki note review popup
+(add-to-list 'load-path "<path-to-popweb>/extension/anki-review")
+(require 'popweb-anki-review)
 ```
 
 ## Usage
@@ -40,6 +44,7 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 * `M-x popweb-org-roam-link-preview-select` Select one of all Org-Roam ID links and footnote links in a Org-mode buffer by ivy, then preview the content of link.
 * `M-x popweb-org-roam-node-preview-select` Select one Org-Roam node by ivy, then hit `C-M-m ivy-call` to preview the content of node without exit ivy windown.
 * `M-x popweb-import-browser-cookies` Import cookies for the specified domain name.
+* `M-x popweb-anki-review-show` Marked a region then execute this command, or just call this command then input the query. Even use `C-u popweb-anki-review-show` to grab sentence automatically for you. After the window popup use mouse select the `word` to review in Anki notes.
 ## Screenshots
 ### LaTeX Preview
 <p align="center">
@@ -69,6 +74,11 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
 ### Org-Roam node preview
 <p align="center">
   <img width="800" src="./img/org-roam-node-preview.gif">
+</p>
+
+### Anki note review
+<p align="center">
+  <img width="800" src="./img/anki-note-review.gif">
 </p>
 
 ## Customization
@@ -126,6 +136,19 @@ Popup window scales to Emacs's.
 (setq popweb-url-web-window-height-absolute 270)
 ```
 Popup window's size in pixels
+
+## Config Anki note review media directory and install python playsound package
+If you when to play Anki note sound file, configure the Anki media direction.
+
+```
+(setq popweb-anki-review-media-directory <path-to-Anki-media-directory>)
+```
+
+then install python playsound package.
+
+```
+python3 -m pip install playsound
+```
 
 ## Open developer tools
 You can set option `popweb-enable-developer-tools` with `t`, then you can debug popweb page like normal browser does.
