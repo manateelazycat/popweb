@@ -76,11 +76,6 @@ I consider `popweb` to be a sister project, and a lightweight version of EAF tha
   <img width="800" src="./img/org-roam-node-preview.gif">
 </p>
 
-### Anki note review
-<p align="center">
-  <img width="800" src="./img/anki-note-review.gif">
-</p>
-
 ## Customization
 ### Configure popup position using `popweb-popup-pos`
   - `"point-bottom"`: bottom of the cursor, default
@@ -148,6 +143,12 @@ then install python playsound package.
 
 ```
 python3 -m pip install playsound
+```
+
+Customize callback method, for example:
+
+```
+(setq popweb-anki-review-callback "popweb-dict-eudic-dicts-input")
 ```
 
 ## Open developer tools

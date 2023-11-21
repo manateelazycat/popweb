@@ -267,6 +267,10 @@ class CallHandler(QObject):
                 playsound(os.path.expanduser(os.path.join(self.media_directory, result)))
             return (True, None)
 
+        elif cmd.startswith("rev-tt-dictionary "):
+            query = cmd.split()[1:]
+            self.web_window.eval_in_emacs(self.eval_in_emacs_func, query)
+
 def pop_anki_review_window(popweb, module_path, module_name, index_file, x, y,
                            x_offset, y_offset, frame_x, frame_y, frame_w, frame_h,
                            width_scale, height_scale, show_window,
