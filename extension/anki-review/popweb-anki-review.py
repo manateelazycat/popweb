@@ -206,10 +206,11 @@ def get_tooltip_script(script_file) -> str:
     return web_content
 
 class CallHandler(QObject):
-    def __init__(self, web_window, media_directory):
+    def __init__(self, web_window, *args):
         super(CallHandler, self).__init__()
         self.web_window = web_window
-        self.media_directory = media_directory
+        self.media_directory = args[0]
+        self.eval_in_emacs_func = args[1]
 
     def request(self, action, **params):
         return {'action': action, 'params': params, 'version': 6}
@@ -270,14 +271,16 @@ def pop_anki_review_window(popweb, module_path, module_name, index_file, x, y,
                            x_offset, y_offset, frame_x, frame_y, frame_w, frame_h,
                            width_scale, height_scale, show_window,
                            script_file, media_directory,
-                           new_query_p, emacs_query):
+                           new_query_p, emacs_query,
+                           eval_in_emacs_func):
 
     web_window = popweb.get_web_window(module_name)
 
     if not hasattr(web_window.webview, "channel") and not hasattr(web_window.webview, "handler"):
         popweb.build_web_channel(module_path, module_name,
-                                 "CallHandler", "expanded_on_bridge_cmd",
-                                 media_directory, "handler")
+                                 "handler", "CallHandler",
+                                 "expanded_on_bridge_cmd",
+                                 media_directory, eval_in_emacs_func)
 
     window_width = frame_w * width_scale
     window_height = frame_h * height_scale

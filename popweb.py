@@ -460,6 +460,11 @@ class WebWindow(QWidget):
         ''' Remove dark mode support.'''
         self.webview.page().runJavaScript("""DarkReader.disable();""")
 
+    def eval_in_emacs(self, *args):
+        method_name = args[0]
+        args = args[1:]
+        eval_in_emacs(method_name, *args)
+
 class POPWEB(object):
     def __init__(self, args):
         global proxy_string
@@ -606,14 +611,14 @@ class POPWEB(object):
                 web_window.developer_tools_view.hide()
 
     @PostGui()
-    def build_web_channel(self, module_path, module_name, slot_class_name, slot_method_name, slot_method_args, expose_to_js_handler_name):
+    def build_web_channel(self, module_path, module_name, expose_to_js_handler_name, slot_class_name, slot_method_name, *slot_method_args):
         module = self.get_module(module_path)
         slot_class = getattr(module, slot_class_name)
         slot_method = getattr(slot_class, slot_method_name)
         slot_class.slot_method_name = QtCore.pyqtSlot(QtCore.QVariant, result=QtCore.QVariant)(slot_method)
         web_window = self.get_web_window(module_name)
         web_window.webview.channel = QWebChannel()
-        web_window.webview.handler = slot_class(web_window, slot_method_args)
+        web_window.webview.handler = slot_class(web_window, *slot_method_args)
         web_window.webview.channel.registerObject(expose_to_js_handler_name, web_window.webview.handler)
         web_window.webview.page().setWebChannel(web_window.webview.channel)
 

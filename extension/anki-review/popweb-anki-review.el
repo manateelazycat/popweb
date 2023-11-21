@@ -91,6 +91,10 @@
   "Anki media directory."
   :type '(string))
 
+(defcustom popweb-anki-review-callback nil
+  "Customize callback function."
+  :type '(string))
+
 (defcustom popweb-anki-review-eww-sentence-abbrevs '("i.e." "etc." "U.S.")
   "Prevent to incorrectly determine sentence end."
   :type '(repeat string)
@@ -184,6 +188,7 @@ Otherwise return sentence around point."
          (emacs-query (nth 1 info))
          (script-file popweb-anki-review-tooltip-file)
          (media-directory popweb-anki-review-media-directory)
+         (callback popweb-anki-review-callback)
          (new-query-p (not (string= emacs-query popweb-anki-review-preview--previous-query))))
     (popweb-call-sync "call_module_method" popweb-anki-review-module-path
                        "pop_anki_review_window"
@@ -196,7 +201,8 @@ Otherwise return sentence around point."
                         popweb-anki-review-popup-window-width-scale
                         popweb-anki-review-popup-window-height-scale
                         show-window script-file media-directory
-                        new-query-p emacs-query))
+                        new-query-p emacs-query
+                        callback))
     (popweb-anki-review-preview-window-can-hide)))
 
 (defun popweb-anki-review-preview-window-can-hide ()
