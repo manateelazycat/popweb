@@ -588,6 +588,9 @@ class POPWEB(object):
                 render_x = frame_x + frame_w - render_w - x_offset
             if render_y + render_h > frame_y + frame_h:
                 render_y = render_y - render_h - y_offset
+        elif popup_pos == "middle":
+            render_x = frame_x + (frame_w - render_w) / 2 - x_offset
+            render_y = frame_y + (frame_h - render_h) / 2 - y_offset
         else:
             raise Exception('Cannot recognize Emacs variable popweb-popup-pos!')
         render_x = max(render_x, 0)

@@ -128,6 +128,7 @@
                         url))
     (popweb-url-web-window-can-hide)))
 
+;;;###autoload
 (defun popweb-url-input (&optional url)
   "Input URL for preview."
   (interactive)
@@ -136,6 +137,7 @@
                  (or url (popweb-url-prompt-input "preview url: "))))
   (add-hook 'post-command-hook #'popweb-url-web-window-hide-after-move))
 
+;;;###autoload
 (defun popweb-url-preview-pointer()
   "Preview current pointer url."
   (interactive)
