@@ -87,6 +87,7 @@
 (setq popweb-color-picker-index-path (concat (file-name-directory load-file-name) "index.html"))
 (setq popweb-color-picker-module-path (concat (file-name-directory load-file-name) "color-picker.py"))
 
+;;;###autoload
 (defun popweb-color-picker-show ()
   (interactive)
   (let* ((position (popweb-get-cursor-coordinate))

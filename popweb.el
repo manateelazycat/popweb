@@ -170,7 +170,8 @@ Available options:
 - \"top-left\": top-left of the screen
 - \"top-right\": top-right of the screen
 - \"bottom-left\": bottom-left: of the screen
-- \"bottom-right\": bottom-right of the screen"
+- \"bottom-right\": bottom-right of the screen
+- \"middle\": middle of the screen"
   :type 'string)
 
 (defcustom popweb-enable-debug nil
@@ -246,6 +247,7 @@ Turn on this option will improve start speed."
         (add-to-list 'environments "QT_QPA_PLATFORM=xcb" t)))
     environments))
 
+;;;###autoload
 (defun popweb-restart-process ()
   "Stop and restart POPWEB process."
   (interactive)
@@ -299,6 +301,7 @@ Turn on this option will improve start speed."
 
 (defvar popweb-stop-process-hook nil)
 
+;;;###autoload
 (defun popweb-kill-process ()
   "Stop POPWEB process and kill all POPWEB buffers."
   (interactive)
@@ -309,6 +312,7 @@ Turn on this option will improve start speed."
   ;; Kill process after kill buffer, make application can save session data.
   (popweb--kill-python-process))
 
+;;;###autoload
 (defun popweb--kill-python-process ()
   "Kill POPWEB background python process."
   (interactive)
@@ -388,6 +392,7 @@ WEBENGINE-INCLUDE-PRIVATE-CODEC is only useful when app-name is video-player."
             (popweb-color-int-to-hex (nth 2 components)))))
 
 
+;;;###autoload
 (defun popweb-import-browser-cookies (browser domain-name)
   "Import cookies for the specified domain name."
   (interactive (list (completing-read "Which browser ? "
