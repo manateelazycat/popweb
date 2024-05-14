@@ -208,6 +208,7 @@ Otherwise return sentence around point."
 (defun popweb-anki-review-preview-window-can-hide ()
   (run-with-timer 1 nil (lambda () (setq popweb-anki-review-preview-window-visible-p t))))
 
+;;;###autoload
 (defun popweb-anki-review-show (&optional arg)
   (interactive "P")
 

@@ -233,6 +233,7 @@
 (defun popweb-org-roam-link-preview-window-can-hide ()
   (run-with-timer 1 nil (lambda () (setq popweb-org-roam-link-preview-window-visible-p t))))
 
+;;;###autoload
 (defun popweb-org-roam-link-show (&optional context ivy-action-x)
   (interactive)
   (let* ((context-string (or context (get-org-context-at-point)))
@@ -267,6 +268,7 @@
         ((stringp x)
          (setq org-roam-node-ivy-read-result (org-roam-node-create :title x)))))
 
+;;;###autoload
 (defun popweb-org-roam-link-preview-select ()
   (interactive)
   (ivy-read "Select a link to preview: " (append (find-org-id-links) (find-footnotes))
@@ -275,12 +277,14 @@
                                     ((string= "Footnote" (elt link 1))
                                      (popweb-org-roam-link-show (get-org-context-from-footnote (elt link 4))))))))
 
+;;;###autoload
 (defun popweb-org-roam-node-preview-select (&optional initial-input filter-fn sort-fn require-match prompt)
   (interactive)
   (org-roam-node--ivy-read-1 (or prompt "Select a node to preview: ") initial-input filter-fn sort-fn require-match
                              #'popweb-org-roam-node-preview-select-action
                              'popweb-org-roam-node-preview-select))
 
+;;;###autoload
 (defun popweb-org-roam-node-backlinks-preview ()
   (interactive)
   (let* ((id (ignore-errors

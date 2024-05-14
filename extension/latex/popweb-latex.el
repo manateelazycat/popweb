@@ -115,6 +115,7 @@
                         frame-x frame-y frame-w frame-h
                         show-window new-latex latex-string))))
 
+;;;###autoload
 (defun popweb-latex-show ()
   (interactive)
   (let* ((math-at-point (webkit-katex-render--math-at-point))
@@ -129,6 +130,7 @@
       (popweb-start 'popweb-latex-preview (list nil "e^{i\\\\pi}+1=0"))))
   (add-hook 'post-command-hook #'popweb-latex-update nil t))
 
+;;;###autoload
 (defun popweb-latex-update ()
   (interactive)
   (when (popweb-epc-live-p popweb-epc-process)
@@ -163,6 +165,7 @@
             (setq webkit-katex-render--previous-math latex-string))
         (popweb-latex-hide)))))
 
+;;;###autoload
 (defun popweb-latex-hide ()
   (interactive)
   (when popweb-latex-popup-foreground

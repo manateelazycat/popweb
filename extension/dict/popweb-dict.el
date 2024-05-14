@@ -92,6 +92,7 @@
 Default value is t."
   :type 'boolean)
 
+;;;###autoload
 (defun popweb-dict-say-word (&optional word)
   (interactive)
   (unless word
