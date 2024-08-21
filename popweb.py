@@ -649,6 +649,11 @@ class POPWEB(object):
         close_epc_client()
 
 if __name__ == "__main__":
+    if platform.system() == "Darwin":
+        import AppKit
+        info = AppKit.NSBundle.mainBundle().infoDictionary()
+        info["LSBackgroundOnly"] = "1"
+
     proxy_string = ""
 
     destroy_view_list = []
