@@ -96,7 +96,7 @@
              (popweb-epc-live-p popweb-epc-process))
     (popweb-call-async "hide_web_window" "url-preview")
     (setq popweb-url-web-window-visible-p nil)
-    (remove-hook 'post-command-hook #'popweb-dict-bing-web-window-hide-after-move)))
+    (remove-hook 'post-command-hook #'popweb-url-web-window-hide-after-move)))
 
 (defun popweb-url (info)
   "Pop window to show current url preview INFO."
